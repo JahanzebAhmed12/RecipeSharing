@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Browse Recipes - RecipeMaster</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h2>Browse Recipes</h2>
+    <form id="searchForm">
+        <input type="text" name="q" placeholder="Search recipes...">
+        <select name="category">
+            <option value="">All Categories</option>
+            <option value="Vegetarian">Vegetarian</option>
+            <option value="Vegan">Vegan</option>
+            <option value="Non-Vegetarian">Non-Vegetarian</option>
+        </select>
+        <select name="sort">
+            <option value="recent">Recent</option>
+            <option value="popular">Popular</option>
+        </select>
+        <button type="submit">Search</button>
+    </form>
+    <section id="recipeList">
+        <!-- Recipes will be listed here -->
+    </section>
+    <a href="/">Back to Home</a>
+    <script src="/static/recipes.js"></script>
+</body>
+</html> 

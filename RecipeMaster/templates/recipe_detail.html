@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ recipe.title }} - RecipeMaster</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h2>{{ recipe.title }}</h2>
+    <img src="{{ recipe.image_url }}" alt="Recipe Image" style="max-width:100%;height:auto;">
+    <p><strong>Category:</strong> {{ recipe.category }}</p>
+    <p><strong>Cooking Time:</strong> {{ recipe.cooking_time }} mins</p>
+    <p><strong>Description:</strong> {{ recipe.description }}</p>
+    <h3>Ingredients</h3>
+    <ul>
+        {% for item in recipe.ingredients.split('\n') %}
+        <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+    <h3>Preparation Steps</h3>
+    <ol>
+        {% for step in recipe.steps.split('\n') %}
+        <li>{{ step }}</li>
+        {% endfor %}
+    </ol>
+    <button id="favoriteBtn">Save to Favorites</button>
+    <section id="reviews">
+        <h3>Reviews</h3>
+        <!-- Reviews will be listed here -->
+    </section>
+    <a href="/recipes">Back to Recipes</a>
+    <script src="/static/recipe_detail.js"></script>
+</body>
+</html> 

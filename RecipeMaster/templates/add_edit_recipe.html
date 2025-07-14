@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if recipe %}Edit{% else %}Add{% endif %} Recipe - RecipeMaster</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h2>{% if recipe %}Edit{% else %}Add{% endif %} Recipe</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <label>Title:</label><input type="text" name="title" value="{{ recipe.title if recipe else '' }}" required><br>
+        <label>Description:</label><textarea name="description" required>{{ recipe.description if recipe else '' }}</textarea><br>
+        <label>Ingredients (one per line):</label><textarea name="ingredients" required>{{ recipe.ingredients if recipe else '' }}</textarea><br>
+        <label>Preparation Steps (one per line):</label><textarea name="steps" required>{{ recipe.steps if recipe else '' }}</textarea><br>
+        <label>Category:</label>
+        <select name="category" required>
+            <option value="Vegetarian" {% if recipe and recipe.category=='Vegetarian' %}selected{% endif %}>Vegetarian</option>
+            <option value="Vegan" {% if recipe and recipe.category=='Vegan' %}selected{% endif %}>Vegan</option>
+            <option value="Non-Vegetarian" {% if recipe and recipe.category=='Non-Vegetarian' %}selected{% endif %}>Non-Vegetarian</option>
+        </select><br>
+        <label>Cooking Time (minutes):</label><input type="number" name="cooking_time" value="{{ recipe.cooking_time if recipe else '' }}" required><br>
+        <label>Image:</label><input type="file" name="image"><br>
+        <button type="submit">{% if recipe %}Update{% else %}Add{% endif %} Recipe</button>
+    </form>
+    <a href="/recipes">Back to Recipes</a>
+</body>
+</html> 

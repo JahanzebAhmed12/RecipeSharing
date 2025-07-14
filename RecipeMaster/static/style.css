@@ -1,0 +1,8 @@
+body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f8f8f8; }
+header { background: #4CAF50; color: #fff; padding: 1em 0; text-align: center; }
+nav a { color: #fff; margin: 0 1em; text-decoration: none; }
+main, form { max-width: 400px; margin: 2em auto; background: #fff; padding: 2em; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+input, button { width: 100%; padding: 0.5em; margin: 0.5em 0; border-radius: 4px; border: 1px solid #ccc; }
+button { background: #4CAF50; color: #fff; border: none; cursor: pointer; }
+button:hover { background: #45a049; }
+@media (max-width: 600px) { main, form { width: 95%; padding: 1em; } } 
