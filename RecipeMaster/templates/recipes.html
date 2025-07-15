@@ -4,27 +4,128 @@
     <meta charset="UTF-8">
     <title>Browse Recipes - RecipeMaster</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <h2>Browse Recipes</h2>
-    <form id="searchForm">
-        <input type="text" name="q" placeholder="Search recipes...">
-        <select name="category">
-            <option value="">All Categories</option>
-            <option value="Vegetarian">Vegetarian</option>
-            <option value="Vegan">Vegan</option>
-            <option value="Non-Vegetarian">Non-Vegetarian</option>
-        </select>
-        <select name="sort">
-            <option value="recent">Recent</option>
-            <option value="popular">Popular</option>
-        </select>
-        <button type="submit">Search</button>
-    </form>
-    <section id="recipeList">
-        <!-- Recipes will be listed here -->
-    </section>
-    <a href="/">Back to Home</a>
-    <script src="/static/recipes.js"></script>
+<body class="form-bg">
+    <header class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-hat-chef"></i>
+            <span>RecipeShare</span>
+        </div>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/recipes" class="active">Browse Recipes</a>
+            <a href="/add-recipe" class="add-recipe-link">+ Add Recipe</a>
+        </nav>
+        <form class="search-bar">
+            <input type="text" placeholder="Search recipes...">
+            <button type="submit"><i class="fa fa-search"></i></button>
+        </form>
+        <div class="user-icons">
+            <a href="#"><i class="fa-regular fa-heart"></i></a>
+            <a href="#"><i class="fa-regular fa-user"></i> John Doe</a>
+        </div>
+    </header>
+    <main class="browse-container">
+        <h1>Browse Recipes</h1>
+        <p class="subtitle">Discover amazing recipes from our community</p>
+        <div class="browse-search-row">
+            <div class="browse-search-box">
+                <i class="fa fa-search"></i>
+                <input type="text" placeholder="Search recipes, ingredients, or authors...">
+            </div>
+            <button class="filter-btn"><i class="fa fa-filter"></i> Filters</button>
+            <button class="view-btn active"><i class="fa fa-th-large"></i></button>
+            <button class="view-btn"><i class="fa fa-list"></i></button>
+        </div>
+        <div class="showing-count">Showing 6 of 6 recipes</div>
+        <div class="recipe-cards browse-grid">
+            <!-- Example cards -->
+            <div class="recipe-card">
+                <span class="badge">Mediterranean</span>
+                <img src="https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80" alt="Vegetarian Buddha Bowl">
+                <div class="card-content">
+                    <h3>Vegetarian Buddha Bowl</h3>
+                    <p>Healthy and colorful bowl with quinoa, roasted vegetables, and tahini dressing</p>
+                    <div class="card-meta">
+                        <span><i class="fa-regular fa-clock"></i> 35 min</span>
+                        <span><i class="fa fa-star"></i> 4.5</span>
+                        <span><i class="fa fa-user"></i> Green Chef</span>
+                    </div>
+                </div>
+                <button class="fav-btn"><i class="fa fa-heart"></i></button>
+            </div>
+            <div class="recipe-card">
+                <span class="badge">Mediterranean</span>
+                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80" alt="Grilled Salmon with Herbs">
+                <div class="card-content">
+                    <h3>Grilled Salmon with Herbs</h3>
+                    <p>Fresh salmon fillet grilled to perfection with garden herbs</p>
+                    <div class="card-meta">
+                        <span><i class="fa-regular fa-clock"></i> 20 min</span>
+                        <span><i class="fa fa-star"></i> 4.7</span>
+                        <span><i class="fa fa-user"></i> Chef David</span>
+                    </div>
+                </div>
+                <button class="fav-btn"><i class="fa fa-heart"></i></button>
+            </div>
+            <div class="recipe-card">
+                <span class="badge">Dessert</span>
+                <img src="https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80" alt="Chocolate Lava Cake">
+                <div class="card-content">
+                    <h3>Chocolate Lava Cake</h3>
+                    <p>Decadent chocolate cake with a molten center</p>
+                    <div class="card-meta">
+                        <span><i class="fa-regular fa-clock"></i> 25 min</span>
+                        <span><i class="fa fa-star"></i> 4.9</span>
+                        <span><i class="fa fa-user"></i> Baker Emma</span>
+                    </div>
+                </div>
+                <button class="fav-btn"><i class="fa fa-heart"></i></button>
+            </div>
+            <div class="recipe-card">
+                <span class="badge">American</span>
+                <img src="https://images.unsplash.com/photo-1464306076886-debca5e8a6b0?auto=format&fit=crop&w=400&q=80" alt="Classic Caesar Salad">
+                <div class="card-content">
+                    <h3>Classic Caesar Salad</h3>
+                    <p>Fresh romaine lettuce with homemade Caesar dressing and parmesan</p>
+                    <div class="card-meta">
+                        <span><i class="fa-regular fa-clock"></i> 15 min</span>
+                        <span><i class="fa fa-star"></i> 4.6</span>
+                        <span><i class="fa fa-user"></i> John Smith</span>
+                    </div>
+                </div>
+                <button class="fav-btn"><i class="fa fa-heart"></i></button>
+            </div>
+            <div class="recipe-card">
+                <span class="badge">Thai</span>
+                <img src="https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80" alt="Spicy Thai Green Curry">
+                <div class="card-content">
+                    <h3>Spicy Thai Green Curry</h3>
+                    <p>Authentic Thai green curry with coconut milk, vegetables, and aromatic spices</p>
+                    <div class="card-meta">
+                        <span><i class="fa-regular fa-clock"></i> 30 min</span>
+                        <span><i class="fa fa-star"></i> 4.9</span>
+                        <span><i class="fa fa-user"></i> Chef Somchai</span>
+                    </div>
+                </div>
+                <button class="fav-btn"><i class="fa fa-heart"></i></button>
+            </div>
+            <div class="recipe-card">
+                <span class="badge">Italian</span>
+                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80" alt="Creamy Mushroom Risotto">
+                <div class="card-content">
+                    <h3>Creamy Mushroom Risotto</h3>
+                    <p>A rich and creamy Italian risotto with wild mushrooms and parmesan cheese</p>
+                    <div class="card-meta">
+                        <span><i class="fa-regular fa-clock"></i> 45 min</span>
+                        <span><i class="fa fa-star"></i> 4.8</span>
+                        <span><i class="fa fa-user"></i> Maria Rossi</span>
+                    </div>
+                </div>
+                <button class="fav-btn"><i class="fa fa-heart"></i></button>
+            </div>
+        </div>
+    </main>
 </body>
 </html> 

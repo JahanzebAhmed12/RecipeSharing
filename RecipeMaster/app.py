@@ -66,6 +66,14 @@ def profile():
         flash('Profile updated!')
     return render_template('profile.html', user=user)
 
+@app.route('/add-recipe')
+def add_recipe():
+    return render_template('add_edit_recipe.html')
+
+@app.route('/recipes')
+def browse_recipes():
+    return render_template('recipes.html')
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()

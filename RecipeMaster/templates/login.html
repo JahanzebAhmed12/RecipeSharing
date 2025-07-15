@@ -4,14 +4,47 @@
     <meta charset="UTF-8">
     <title>Login - RecipeMaster</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <h2>Login</h2>
-    <form method="POST">
-        <label>Email:</label><input type="email" name="email" required><br>
-        <label>Password:</label><input type="password" name="password" required><br>
-        <button type="submit">Login</button>
-    </form>
-    <a href="/register">Don't have an account? Register</a>
+<body class="modal-bg">
+    <div class="modal">
+        <form method="POST" class="signup-form">
+            <div class="modal-header">
+                <h2>Login</h2>
+                <a href="/" class="close-btn">&times;</a>
+            </div>
+            <div class="input-group">
+                <label>Email</label>
+                <div class="input-icon">
+                    <i class="fa fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Enter your email" required>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <div class="input-icon password-group">
+                    <i class="fa fa-lock"></i>
+                    <input type="password" name="password" id="password" placeholder="Enter your password" required>
+                    <span class="toggle-password" onclick="togglePassword('password', this)"><i class="fa fa-eye"></i></span>
+                </div>
+            </div>
+            <button type="submit" class="btn signup-btn">Login</button>
+            <div class="modal-footer">
+                Don't have an account? <a href="/register">Sign Up</a>
+            </div>
+        </form>
+    </div>
+    <script>
+    function togglePassword(id, el) {
+        const input = document.getElementById(id);
+        if (input.type === 'password') {
+            input.type = 'text';
+            el.innerHTML = '<i class="fa fa-eye-slash"></i>';
+        } else {
+            input.type = 'password';
+            el.innerHTML = '<i class="fa fa-eye"></i>';
+        }
+    }
+    </script>
 </body>
 </html> 

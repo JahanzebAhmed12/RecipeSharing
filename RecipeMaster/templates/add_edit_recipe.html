@@ -2,26 +2,106 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% if recipe %}Edit{% else %}Add{% endif %} Recipe - RecipeMaster</title>
+    <title>Add New Recipe - RecipeMaster</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <h2>{% if recipe %}Edit{% else %}Add{% endif %} Recipe</h2>
-    <form method="POST" enctype="multipart/form-data">
-        <label>Title:</label><input type="text" name="title" value="{{ recipe.title if recipe else '' }}" required><br>
-        <label>Description:</label><textarea name="description" required>{{ recipe.description if recipe else '' }}</textarea><br>
-        <label>Ingredients (one per line):</label><textarea name="ingredients" required>{{ recipe.ingredients if recipe else '' }}</textarea><br>
-        <label>Preparation Steps (one per line):</label><textarea name="steps" required>{{ recipe.steps if recipe else '' }}</textarea><br>
-        <label>Category:</label>
-        <select name="category" required>
-            <option value="Vegetarian" {% if recipe and recipe.category=='Vegetarian' %}selected{% endif %}>Vegetarian</option>
-            <option value="Vegan" {% if recipe and recipe.category=='Vegan' %}selected{% endif %}>Vegan</option>
-            <option value="Non-Vegetarian" {% if recipe and recipe.category=='Non-Vegetarian' %}selected{% endif %}>Non-Vegetarian</option>
-        </select><br>
-        <label>Cooking Time (minutes):</label><input type="number" name="cooking_time" value="{{ recipe.cooking_time if recipe else '' }}" required><br>
-        <label>Image:</label><input type="file" name="image"><br>
-        <button type="submit">{% if recipe %}Update{% else %}Add{% endif %} Recipe</button>
-    </form>
-    <a href="/recipes">Back to Recipes</a>
+<body class="form-bg">
+    <header class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-hat-chef"></i>
+            <span>RecipeShare</span>
+        </div>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/recipes">Browse Recipes</a>
+            <a href="/add-recipe" class="add-recipe-link">+ Add Recipe</a>
+        </nav>
+        <form class="search-bar">
+            <input type="text" placeholder="Search recipes...">
+            <button type="submit"><i class="fa fa-search"></i></button>
+        </form>
+        <div class="user-icons">
+            <a href="#"><i class="fa-regular fa-heart"></i></a>
+            <a href="#"><i class="fa-regular fa-user"></i> Jahanzeb Ahmed</a>
+        </div>
+    </header>
+    <main class="recipe-form-container">
+        <form class="recipe-form" method="POST" enctype="multipart/form-data">
+            <h1>Add New Recipe</h1>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Recipe Title *</label>
+                    <input type="text" name="title" placeholder="Enter recipe title" required>
+                </div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select name="category" required>
+                        <option value="">Select category</option>
+                        <option>Breakfast</option>
+                        <option>Lunch</option>
+                        <option>Dinner</option>
+                        <option>Dessert</option>
+                        <option>Snack</option>
+                        <option>Salad</option>
+                        <option>Soup</option>
+                        <option>Drink</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Description *</label>
+                <textarea name="description" placeholder="Describe your recipe..." required></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Cooking Time (minutes)</label>
+                    <input type="number" name="cooking_time" placeholder="30">
+                </div>
+                <div class="form-group">
+                    <label>Servings</label>
+                    <input type="number" name="servings" placeholder="4">
+                </div>
+                <div class="form-group">
+                    <label>Difficulty</label>
+                    <select name="difficulty">
+                        <option>Easy</option>
+                        <option>Medium</option>
+                        <option>Hard</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Recipe Image</label>
+                <div class="image-upload-box">
+                    <i class="fa fa-upload"></i>
+                    <span>Click to upload recipe image</span>
+                    <input type="file" name="image" accept="image/*">
+                    <button type="button" class="choose-image-btn">Choose Image</button>
+                </div>
+            </div>
+            <div class="form-group ingredients-group">
+                <label>Ingredients *</label>
+                <div class="ingredients-list">
+                    <input type="text" name="ingredient1" placeholder="Ingredient 1" required>
+                </div>
+                <button type="button" class="add-ingredient-btn"><i class="fa fa-plus"></i> Add Ingredient</button>
+            </div>
+            <div class="form-group instructions-group">
+                <label>Instructions *</label>
+                <div class="instructions-list">
+                    <div class="instruction-step">
+                        <span class="step-number">1</span>
+                        <textarea name="instruction1" placeholder="Step 1 instructions..." required></textarea>
+                    </div>
+                </div>
+                <button type="button" class="add-step-btn"><i class="fa fa-plus"></i> Add Step</button>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="cancel-btn">Cancel</button>
+                <button type="submit" class="btn save-btn"><i class="fa fa-save"></i> Save Recipe</button>
+            </div>
+        </form>
+    </main>
 </body>
 </html> 
