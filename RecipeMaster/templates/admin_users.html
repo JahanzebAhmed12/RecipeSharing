@@ -1,0 +1,173 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Manage Users - Admin - RecipeMaster{% endblock %}
+
+{% block admin_content %}
+<div class="admin-header">
+    <h1>Manage Users</h1>
+</div>
+
+<div class="admin-section">
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.name or 'N/A' }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.role }}</td>
+                    <td>
+                        <span class="status-badge {% if not user.blocked %}status-active{% else %}status-blocked{% endif %}">
+                            {{ 'Active' if not user.blocked else 'Blocked' }}
+                        </span>
+                    </td>
+                    <td class="actions">
+                        {% if user.role != 'Admin' %}
+                            {% if not user.blocked %}
+                            <button onclick="blockUser('{{ user.id }}')" class="btn btn-warning">
+                                Block
+                            </button>
+                            {% else %}
+                            <button onclick="unblockUser('{{ user.id }}')" class="btn btn-success">
+                                Unblock
+                            </button>
+                            {% endif %}
+                            <button onclick="confirmDelete('{{ user.id }}')" class="btn btn-danger">
+                                Delete
+                            </button>
+                        {% else %}
+                            <span class="text-muted">No actions available</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center;">No users found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+async function blockUser(userId) {
+    if (confirm('Are you sure you want to block this user?')) {
+        try {
+            const response = await fetch(`/admin/users/${userId}/block`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ blocked: true })
+            });
+            
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert('Failed to block user');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while blocking the user');
+        }
+    }
+}
+
+async function unblockUser(userId) {
+    if (confirm('Are you sure you want to unblock this user?')) {
+        try {
+            const response = await fetch(`/admin/users/${userId}/block`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ blocked: false })
+            });
+            
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert('Failed to unblock user');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while unblocking the user');
+        }
+    }
+}
+
+function confirmDelete(userId) {
+    if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+        window.location.href = `/admin/users/${userId}/delete`;
+    }
+}
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function updateUserStatus(userId, isActive) {
+    const action = isActive ? 'unblock' : 'block';
+    const actionText = isActive ? 'unblock' : 'block';
+    
+    if (confirm(`Are you sure you want to ${actionText} this user?`)) {
+        fetch(`/admin/user/${userId}/${action}`, { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+        })
+        .then(function(response) {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert(`Failed to ${actionText} user`);
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            alert(`An error occurred while trying to ${actionText} the user`);
+        });
+    }
+}
+
+function deleteUser(userId) {
+    if (confirm('Are you sure you want to delete this user? This action cannot be undone and will also delete all their recipes and reviews.')) {
+        fetch(`/admin/user/${userId}/delete`, { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+        })
+        .then(function(response) {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert('Failed to delete user');
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the user');
+        });
+    }
+}
+</script>
+{% endblock %}
+

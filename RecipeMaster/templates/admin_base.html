@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+<style>
+    .admin-nav-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .admin-nav {
+        display: flex;
+        gap: 1.5rem;
+    }
+    
+    .admin-nav a {
+        color: #333;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 0;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+    }
+    
+    .admin-nav a:hover,
+    .admin-nav a.active {
+        color: #007bff;
+        border-bottom-color: #007bff;
+    }
+    
+    /* User menu is now in the main header */
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="admin-nav-container">
+    <nav class="admin-nav">
+        <a href="{{ url_for('admin_dashboard') }}" {% if request.endpoint == 'admin_dashboard' %}class="active"{% endif %}>
+            Dashboard
+        </a>
+        <a href="{{ url_for('admin_users') }}" {% if request.endpoint == 'admin_users' %}class="active"{% endif %}>
+            Manage Users
+        </a>
+        <a href="{{ url_for('admin_recipes') }}" {% if request.endpoint == 'admin_recipes' %}class="active"{% endif %}>
+            Manage Recipes
+        </a>
+        <a href="{{ url_for('admin_reviews') }}" {% if request.endpoint == 'admin_reviews' %}class="active"{% endif %}>
+            Moderate Reviews
+        </a>
+    </nav>
+</header>
+
+<main class="admin-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                    <button type="button" class="close" onclick="this.parentElement.style.display='none';">&times;</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    {% block admin_content %}{% endblock %}
+</main>
+{% endblock %}
+
+{% block footer %}
+<footer class="admin-footer">
+    <div class="container">
+        <div class="admin-footer-content">
+            <div class="admin-footer-section">
+                <h3>RecipeMaster Admin</h3>
+                <p>Manage users, recipes, and content with our powerful admin tools.</p>
+            </div>
+            <div class="admin-footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('admin_users') }}">Manage Users</a></li>
+                    <li><a href="{{ url_for('admin_recipes') }}">Manage Recipes</a></li>
+                    <li><a href="{{ url_for('admin_reviews') }}">Moderate Reviews</a></li>
+                </ul>
+            </div>
+            <div class="admin-footer-section">
+                <h3>Support</h3>
+                <p>Need help? Contact our support team.</p>
+                <p>Email: support@recipemaster.com</p>
+            </div>
+        </div>
+        <div class="admin-footer-bottom">
+            <p>&copy; 2025 RecipeMaster. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+{% endblock %}

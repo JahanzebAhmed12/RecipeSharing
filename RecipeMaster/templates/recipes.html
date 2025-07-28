@@ -1,131 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Browse Recipes - RecipeMaster</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="form-bg">
-    <header class="navbar">
-        <div class="logo">
-            <i class="fa-solid fa-hat-chef"></i>
-            <span>RecipeShare</span>
+{% extends "base.html" %}
+
+{% block title %}Browse Recipes - RecipeMaster{% endblock %}
+
+{% block content %}
+<main class="browse-container">
+    <h1>Browse Recipes</h1>
+    <p class="subtitle">Discover amazing recipes from our community</p>
+    <form class="filter-card filter-bar" method="get" action="/recipes">
+        <input type="text" name="q" placeholder="Search recipes..." value="{{ request.args.get('q', '') }}">
+        <input type="text" name="ingredients" placeholder="Ingredients (comma separated)" value="{{ request.args.get('ingredients', '') }}">
+        <input type="text" name="category" placeholder="Category" value="{{ request.args.get('category', '') }}">
+        <input type="number" name="cooking_time" placeholder="Max Cooking Time (min)" value="{{ request.args.get('cooking_time', '') }}">
+        <select name="dietary_preference">
+            <option value="">All Preferences</option>
+            <option value="Vegetarian" {% if request.args.get('dietary_preference') == 'Vegetarian' %}selected{% endif %}>Vegetarian</option>
+            <option value="Vegan" {% if request.args.get('dietary_preference') == 'Vegan' %}selected{% endif %}>Vegan</option>
+            <option value="Non-Vegetarian" {% if request.args.get('dietary_preference') == 'Non-Vegetarian' %}selected{% endif %}>Non-Vegetarian</option>
+        </select>
+        <select name="sort">
+            <option value="recent" {% if request.args.get('sort', 'recent') == 'recent' %}selected{% endif %}>Recent Uploads</option>
+            <option value="popularity" {% if request.args.get('sort') == 'popularity' %}selected{% endif %}>Popularity</option>
+        </select>
+        <button type="submit"><i class="fa fa-search"></i></button>
+    </form>
+    <div class="showing-count">Showing {{ recipes|length }} recipe{{ '' if recipes|length == 1 else 's' }}</div>
+    <div class="recipe-cards browse-grid">
+        {% for recipe in recipes %}
+        <div class="recipe-card">
+            <span class="badge">{{ recipe.category }}</span>
+            <a href="/recipe/{{ recipe.id }}">
+                <img src="{{ recipe.image_url or '/static/default_recipe.jpg' }}" alt="{{ recipe.title }}">
+            </a>
+            <div class="card-content">
+                <h3><a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a></h3>
+                <p>{{ recipe.description[:100] }}{% if recipe.description|length > 100 %}...{% endif %}</p>
+                <div class="card-meta">
+                    <span><i class="fa-regular fa-clock"></i> {{ recipe.cooking_time or '?' }} min</span>
+                    <span><i class="fa fa-user"></i> {{ recipe.author_name }}</span>
+                    <span class="popularity"><i class="fa fa-star"></i> {{ recipe.popularity }}</span>
+                </div>
+                <div class="card-actions">
+                    <a href="/recipe/{{ recipe.id }}" class="btn btn-sm btn-primary">View Recipe</a>
+                    <a href="/recipe/{{ recipe.id }}#reviews" class="btn btn-sm btn-secondary">Add Review</a>
+                </div>
+            </div>
+            <button class="fav-btn" 
+                    data-recipe-id="{{ recipe.id }}" 
+                    data-favourited="{{ 'true' if recipe.favourited else 'false' }}">
+                <i class="fa{% if recipe.favourited %}s{% else %}-regular{% endif %} fa-heart"></i>
+            </button>
         </div>
-        <nav>
-            <a href="/">Home</a>
-            <a href="/recipes" class="active">Browse Recipes</a>
-            <a href="/add-recipe" class="add-recipe-link">+ Add Recipe</a>
-        </nav>
-        <form class="search-bar">
-            <input type="text" placeholder="Search recipes...">
-            <button type="submit"><i class="fa fa-search"></i></button>
-        </form>
-        <div class="user-icons">
-            <a href="#"><i class="fa-regular fa-heart"></i></a>
-            <a href="#"><i class="fa-regular fa-user"></i> John Doe</a>
-        </div>
-    </header>
-    <main class="browse-container">
-        <h1>Browse Recipes</h1>
-        <p class="subtitle">Discover amazing recipes from our community</p>
-        <div class="browse-search-row">
-            <div class="browse-search-box">
-                <i class="fa fa-search"></i>
-                <input type="text" placeholder="Search recipes, ingredients, or authors...">
-            </div>
-            <button class="filter-btn"><i class="fa fa-filter"></i> Filters</button>
-            <button class="view-btn active"><i class="fa fa-th-large"></i></button>
-            <button class="view-btn"><i class="fa fa-list"></i></button>
-        </div>
-        <div class="showing-count">Showing 6 of 6 recipes</div>
-        <div class="recipe-cards browse-grid">
-            <!-- Example cards -->
-            <div class="recipe-card">
-                <span class="badge">Mediterranean</span>
-                <img src="https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80" alt="Vegetarian Buddha Bowl">
-                <div class="card-content">
-                    <h3>Vegetarian Buddha Bowl</h3>
-                    <p>Healthy and colorful bowl with quinoa, roasted vegetables, and tahini dressing</p>
-                    <div class="card-meta">
-                        <span><i class="fa-regular fa-clock"></i> 35 min</span>
-                        <span><i class="fa fa-star"></i> 4.5</span>
-                        <span><i class="fa fa-user"></i> Green Chef</span>
-                    </div>
-                </div>
-                <button class="fav-btn"><i class="fa fa-heart"></i></button>
-            </div>
-            <div class="recipe-card">
-                <span class="badge">Mediterranean</span>
-                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80" alt="Grilled Salmon with Herbs">
-                <div class="card-content">
-                    <h3>Grilled Salmon with Herbs</h3>
-                    <p>Fresh salmon fillet grilled to perfection with garden herbs</p>
-                    <div class="card-meta">
-                        <span><i class="fa-regular fa-clock"></i> 20 min</span>
-                        <span><i class="fa fa-star"></i> 4.7</span>
-                        <span><i class="fa fa-user"></i> Chef David</span>
-                    </div>
-                </div>
-                <button class="fav-btn"><i class="fa fa-heart"></i></button>
-            </div>
-            <div class="recipe-card">
-                <span class="badge">Dessert</span>
-                <img src="https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80" alt="Chocolate Lava Cake">
-                <div class="card-content">
-                    <h3>Chocolate Lava Cake</h3>
-                    <p>Decadent chocolate cake with a molten center</p>
-                    <div class="card-meta">
-                        <span><i class="fa-regular fa-clock"></i> 25 min</span>
-                        <span><i class="fa fa-star"></i> 4.9</span>
-                        <span><i class="fa fa-user"></i> Baker Emma</span>
-                    </div>
-                </div>
-                <button class="fav-btn"><i class="fa fa-heart"></i></button>
-            </div>
-            <div class="recipe-card">
-                <span class="badge">American</span>
-                <img src="https://images.unsplash.com/photo-1464306076886-debca5e8a6b0?auto=format&fit=crop&w=400&q=80" alt="Classic Caesar Salad">
-                <div class="card-content">
-                    <h3>Classic Caesar Salad</h3>
-                    <p>Fresh romaine lettuce with homemade Caesar dressing and parmesan</p>
-                    <div class="card-meta">
-                        <span><i class="fa-regular fa-clock"></i> 15 min</span>
-                        <span><i class="fa fa-star"></i> 4.6</span>
-                        <span><i class="fa fa-user"></i> John Smith</span>
-                    </div>
-                </div>
-                <button class="fav-btn"><i class="fa fa-heart"></i></button>
-            </div>
-            <div class="recipe-card">
-                <span class="badge">Thai</span>
-                <img src="https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80" alt="Spicy Thai Green Curry">
-                <div class="card-content">
-                    <h3>Spicy Thai Green Curry</h3>
-                    <p>Authentic Thai green curry with coconut milk, vegetables, and aromatic spices</p>
-                    <div class="card-meta">
-                        <span><i class="fa-regular fa-clock"></i> 30 min</span>
-                        <span><i class="fa fa-star"></i> 4.9</span>
-                        <span><i class="fa fa-user"></i> Chef Somchai</span>
-                    </div>
-                </div>
-                <button class="fav-btn"><i class="fa fa-heart"></i></button>
-            </div>
-            <div class="recipe-card">
-                <span class="badge">Italian</span>
-                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80" alt="Creamy Mushroom Risotto">
-                <div class="card-content">
-                    <h3>Creamy Mushroom Risotto</h3>
-                    <p>A rich and creamy Italian risotto with wild mushrooms and parmesan cheese</p>
-                    <div class="card-meta">
-                        <span><i class="fa-regular fa-clock"></i> 45 min</span>
-                        <span><i class="fa fa-star"></i> 4.8</span>
-                        <span><i class="fa fa-user"></i> Maria Rossi</span>
-                    </div>
-                </div>
-                <button class="fav-btn"><i class="fa fa-heart"></i></button>
-            </div>
-        </div>
-    </main>
-</body>
-</html> 
+        {% else %}
+        <p>No recipes found.</p>
+        {% endfor %}
+    </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.fav-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const recipeId = this.dataset.recipeId;
+                const isFavourited = this.dataset.favourited === 'true';
+                const url = isFavourited ? `/unfavourite/${recipeId}` : `/favourite/${recipeId}`;
+                
+                fetch(url, {method: 'POST'})
+                    .then(response => {
+                        if (response.ok) {
+                            location.reload();
+                        } else {
+                            console.error('Failed to toggle favourite');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
+        });
+    });
+</script>
+{% endblock %}

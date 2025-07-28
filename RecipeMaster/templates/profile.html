@@ -2,17 +2,94 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Profile - RecipeMaster</title>
+    <title>Profile Settings - RecipeMaster</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+    body { background: #f7f7f9; font-family: 'Segoe UI', Arial, sans-serif; }
+    .profile-header { text-align: center; margin-top: 2em; margin-bottom: 1.5em; }
+    .profile-header h2 { font-size: 2.2em; margin-bottom: 0.2em; }
+    .profile-card {
+        background: #fff;
+        max-width: 420px;
+        margin: 0 auto;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        padding: 2em 2.2em 1.5em 2.2em;
+    }
+    .profile-card h3 { margin-top: 1.2em; margin-bottom: 0.7em; font-size: 1.2em; color: #ff7300; }
+    .profile-card form { margin-bottom: 1.2em; }
+    .profile-card label { display: block; margin-bottom: 0.3em; font-weight: 500; }
+    .profile-card input[type="text"],
+    .profile-card input[type="email"],
+    .profile-card input[type="password"] {
+        width: 100%;
+        padding: 0.6em;
+        margin-bottom: 0.8em;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 1em;
+        background: #f9f9f9;
+    }
+    .profile-card button {
+        background: #ff7300;
+        color: #fff;
+        border: none;
+        padding: 0.6em 1.2em;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1em;
+        margin-right: 0.5em;
+        transition: background 0.2s;
+    }
+    .profile-card button:hover { background: #ff9500; }
+    .profile-card .delete-btn { background: #e74c3c; margin-top: 0.5em; }
+    .profile-card .delete-btn:hover { background: #c0392b; }
+    .flash-messages { margin-bottom: 1em; }
+    .flash { background: #ffe0e0; color: #c00; padding: 0.5em 1em; border-radius: 6px; margin-bottom: 0.5em; }
+    .back-link { display: block; text-align: center; margin-top: 2em; color: #888; text-decoration: none; }
+    .back-link:hover { color: #ff7300; }
+    </style>
 </head>
 <body>
-    <h2>Profile</h2>
-    <form method="POST">
-        <label>Name:</label><input type="text" name="name" value="{{ user.name }}" required><br>
-        <button type="submit">Update Profile</button>
-    </form>
-    <a href="/change-password">Change Password</a><br>
-    <a href="/delete-account">Delete Account</a><br>
-    <a href="/">Back to Home</a>
+    <div class="profile-header">
+        <i class="fa fa-user-circle fa-3x" style="color:#ff7300;"></i>
+        <h2>Profile Settings</h2>
+        <p>Manage your account information and security</p>
+    </div>
+    <div class="profile-card">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for message in messages %}
+            <div class="flash">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        <h3>Account Info</h3>
+        <form method="POST" action="/profile">
+            <label>Name</label>
+            <input type="text" name="name" value="{{ user.name }}" required>
+            <label>Email</label>
+            <input type="email" name="email" value="{{ user.email }}" required>
+            <button type="submit" name="action" value="update_profile">Update Profile</button>
+        </form>
+        <h3>Change Password</h3>
+        <form method="POST" action="/profile">
+            <label>Current Password</label>
+            <input type="password" name="current_password" required>
+            <label>New Password</label>
+            <input type="password" name="new_password" required>
+            <label>Confirm New Password</label>
+            <input type="password" name="confirm_new_password" required>
+            <button type="submit" name="action" value="change_password">Change Password</button>
+        </form>
+        <h3>Danger Zone</h3>
+        <form method="POST" action="/profile" onsubmit="return confirm('Are you sure you want to delete your account?');">
+            <button type="submit" name="action" value="delete_account" class="delete-btn">Delete Account</button>
+        </form>
+    </div>
+    <a href="/" class="back-link">&larr; Back to Home</a>
 </body>
 </html> 

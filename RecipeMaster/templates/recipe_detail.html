@@ -1,34 +1,232 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ recipe.title }} - RecipeMaster</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    <h2>{{ recipe.title }}</h2>
-    <img src="{{ recipe.image_url }}" alt="Recipe Image" style="max-width:100%;height:auto;">
-    <p><strong>Category:</strong> {{ recipe.category }}</p>
-    <p><strong>Cooking Time:</strong> {{ recipe.cooking_time }} mins</p>
-    <p><strong>Description:</strong> {{ recipe.description }}</p>
-    <h3>Ingredients</h3>
-    <ul>
-        {% for item in recipe.ingredients.split('\n') %}
-        <li>{{ item }}</li>
-        {% endfor %}
-    </ul>
-    <h3>Preparation Steps</h3>
-    <ol>
-        {% for step in recipe.steps.split('\n') %}
-        <li>{{ step }}</li>
-        {% endfor %}
-    </ol>
-    <button id="favoriteBtn">Save to Favorites</button>
-    <section id="reviews">
-        <h3>Reviews</h3>
-        <!-- Reviews will be listed here -->
+{% extends "base.html" %}
+
+{% block title %}{{ recipe.title }} - RecipeMaster{% endblock %}
+
+{% block content %}
+<main class="recipe-detail-container">
+    <div class="recipe-header">
+        <div class="recipe-image">
+            <img src="{{ recipe.image_url or '/static/default_recipe.jpg' }}" alt="{{ recipe.title }}">
+        </div>
+        <div class="recipe-info">
+            <h1>{{ recipe.title }}</h1>
+            <div class="recipe-meta">
+                <span class="category-badge">{{ recipe.category }}</span>
+                <span class="cooking-time"><i class="fa-regular fa-clock"></i> {{ recipe.cooking_time }} mins</span>
+                <span class="servings"><i class="fa fa-users"></i> {{ recipe.servings or 'N/A' }} servings</span>
+                <span class="difficulty"><i class="fa fa-signal"></i> {{ recipe.difficulty or 'Medium' }}</span>
+            </div>
+            <p class="recipe-description">{{ recipe.description }}</p>
+            
+            {% if current_user.is_authenticated %}
+            <button id="favoriteBtn" class="favorite-btn">
+                <i class="fa fa-heart"></i> Save to Favorites
+            </button>
+            {% endif %}
+            
+            {% if is_owner %}
+            <div class="owner-actions">
+                <a href="/edit-recipe/{{ recipe.id }}" class="btn btn-edit">
+                    <i class="fa fa-edit"></i> Edit Recipe
+                </a>
+                <form action="/delete-recipe/{{ recipe.id }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-delete" onclick="return confirm('Delete this recipe?')">
+                        <i class="fa fa-trash"></i> Delete Recipe
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="recipe-content">
+        <div class="ingredients-section">
+            <h2><i class="fa fa-list"></i> Ingredients</h2>
+            <ul class="ingredients-list">
+                {% for item in recipe.ingredients.split('\n') %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="instructions-section">
+            <h2><i class="fa fa-clipboard-list"></i> Preparation Steps</h2>
+            <ol class="instructions-list">
+                {% for step in recipe.steps.split('\n') %}
+                <li>{{ step }}</li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+
+    <section class="reviews-section">
+        <h2><i class="fa fa-star"></i> Reviews</h2>
+        
+        {% if avg_rating %}
+        <div class="avg-rating">
+            <span class="rating-text">Average Rating:</span>
+            <div class="stars">
+                {% for i in range(1,6) %}
+                <i class="fa{% if i <= avg_rating|round(0, 'floor') %}s{% else %}-regular{% endif %} fa-star"></i>
+                {% endfor %}
+            </div>
+            <span class="rating-value">({{ avg_rating }}/5)</span>
+        </div>
+        {% endif %}
+
+        <!-- Review Form - Always show if user is authenticated -->
+        {% if session.user_id %}
+            {% if user_review %}
+            <form id="reviewForm" class="review-form" data-recipe-id="{{ recipe.id }}" data-is-update="true">
+                <h3>Update Your Review</h3>
+                <div class="rating-input">
+                    <label>Your Rating:</label>
+                    <div class="stars-input">
+                        {% for i in range(1,6) %}
+                        <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" {% if user_review.rating == i %}checked{% endif %} required>
+                        <label for="star{{ i }}"><i class="fa fa-star"></i></label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <textarea name="text" placeholder="Your review..." required>{{ user_review.text }}</textarea>
+                <button type="submit" class="btn btn-primary">Update Review</button>
+            </form>
+            {% else %}
+            <form id="reviewForm" class="review-form" data-recipe-id="{{ recipe.id }}" data-is-update="false">
+                <h3>Write a Review</h3>
+                <div class="rating-input">
+                    <label>Your Rating:</label>
+                    <div class="stars-input">
+                        {% for i in range(1,6) %}
+                        <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" required>
+                        <label for="star{{ i }}"><i class="fa fa-star"></i></label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <textarea name="text" placeholder="Your review..." required></textarea>
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+            </form>
+            {% endif %}
+        {% else %}
+        <div class="login-prompt">
+            <p>Please <a href="{{ url_for('login') }}">login</a> to write a review.</p>
+        </div>
+        {% endif %}
+
+        <div class="reviews-list">
+            {% for review in reviews %}
+            <div class="review-item {% if not review.approved %}pending-review{% endif %}">
+                {% if not review.approved %}
+                <div class="review-status">
+                    <span class="status-badge pending">Pending Approval</span>
+                </div>
+                {% endif %}
+                <div class="review-header">
+                    <span class="review-author"><i class="fa fa-user"></i> {{ review.user.name if review.user else 'Unknown User' }}</span>
+                    <div class="review-rating">
+                        {% for i in range(1,6) %}
+                        <i class="fa{% if i <= review.rating %}s{% else %}-regular{% endif %} fa-star"></i>
+                        {% endfor %}
+                    </div>
+                    <span class="review-date">{{ review.timestamp.strftime('%Y-%m-%d') }}</span>
+                </div>
+                <div class="review-text">{{ review.text }}</div>
+            </div>
+            {% else %}
+            <p class="no-reviews">No reviews yet. Be the first to review this recipe!</p>
+            {% endfor %}
+        </div>
     </section>
-    <a href="/recipes">Back to Recipes</a>
-    <script src="/static/recipe_detail.js"></script>
-</body>
-</html> 
+
+    <div class="back-link">
+        <a href="/recipes" class="btn btn-secondary">
+            <i class="fa fa-arrow-left"></i> Back to Recipes
+        </a>
+    </div>
+</main>
+
+<script src="/static/recipe_detail.js"></script>
+<script>
+// Review form submission
+document.addEventListener('DOMContentLoaded', function() {
+    const reviewForm = document.getElementById('reviewForm');
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const recipeId = this.dataset.recipeId;
+            const rating = this.querySelector('input[name="rating"]:checked')?.value;
+            const text = this.querySelector('textarea[name="text"]').value;
+            
+            if (!rating) {
+                alert('Please select a rating');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('rating', rating);
+            formData.append('text', text);
+            
+            fetch(`/recipe/${recipeId}/review`, {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    return response.json().then(data => {
+                        throw new Error(data.msg || 'Failed to submit review');
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error submitting review: ' + error.message);
+            });
+        });
+    }
+    
+    // Star rating functionality
+    const starInputs = document.querySelectorAll('.stars-input input[type="radio"]');
+    const starLabels = document.querySelectorAll('.stars-input label');
+    
+    starLabels.forEach((label, index) => {
+        label.addEventListener('mouseover', function() {
+            for (let i = 0; i <= index; i++) {
+                starLabels[i].style.color = '#ffc107';
+            }
+            for (let i = index + 1; i < starLabels.length; i++) {
+                starLabels[i].style.color = '#ddd';
+            }
+        });
+        
+        label.addEventListener('click', function() {
+            starInputs[index].checked = true;
+        });
+    });
+    
+    // Reset on mouse leave
+    const starsInput = document.querySelector('.stars-input');
+    if (starsInput) {
+        starsInput.addEventListener('mouseleave', function() {
+            const checkedInput = document.querySelector('.stars-input input[type="radio"]:checked');
+            if (checkedInput) {
+                const checkedIndex = Array.from(starInputs).indexOf(checkedInput);
+                starLabels.forEach((label, index) => {
+                    label.style.color = index <= checkedIndex ? '#ffc107' : '#ddd';
+                });
+            } else {
+                starLabels.forEach(label => {
+                    label.style.color = '#ddd';
+                });
+            }
+        });
+    }
+});
+</script>
+{% endblock %} 

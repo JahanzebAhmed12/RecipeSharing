@@ -9,6 +9,15 @@
 <body class="modal-bg">
     <div class="modal">
         <form method="POST" class="signup-form">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                <div class="flash">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
             <div class="modal-header">
                 <h2>Sign Up</h2>
                 <a href="/" class="close-btn">&times;</a>

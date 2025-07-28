@@ -41,6 +41,64 @@ body {
 .navbar nav a.active, .navbar nav a:hover {
     color: #ff7300;
 }
+.user-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.user-menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    color: #222;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.user-menu-btn:hover {
+    background-color: #f5f5f5;
+}
+
+.user-menu-btn i {
+    font-size: 1.2rem;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    min-width: 200px;
+    z-index: 1000;
+}
+
+.dropdown-item {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: #333;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+    background: #f8f9fa;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: #eee;
+    margin: 0.5rem 0;
+}
 .search-bar {
     display: flex;
     align-items: center;
@@ -201,6 +259,39 @@ body {
     margin-right: 0.3rem;
     color: #ff7300;
 }
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: #ff7300;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #ff9500;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
 .cta {
     background: linear-gradient(90deg, #1fd976 0%, #19c4c4 100%);
     color: #fff;
@@ -351,6 +442,9 @@ body {
     margin-top: 0.5rem;
     margin-bottom: 0.7rem;
     transition: background 0.2s;
+    text-align: center;
+    cursor: pointer;
+    display: inline
 }
 .signup-btn:hover {
     background: #ff9500;
@@ -681,4 +775,688 @@ body {
         flex-direction: column;
         align-items: center;
     }
-} 
+}
+.user-menu .user-name {
+    color: #222;
+    font-weight: 500;
+    margin-right: 1rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.user-menu .user-name:hover {
+    color: #ff7300;
+}
+
+.logout-btn {
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.logout-btn:hover {
+    background: #c82333;
+}
+
+/* Recipe Browse Page Styles */
+.fav-btn { 
+    background: none; 
+    border: none; 
+    cursor: pointer; 
+    color: #ff4d4d; 
+    font-size: 1.3em; 
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: #fff;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    transition: background 0.2s, color 0.2s;
+    z-index: 2;
+}
+
+.fav-btn:hover {
+    background: #ff4d4d;
+    color: #fff;
+}
+
+.fav-btn .fa-heart { 
+    transition: color 0.2s; 
+}
+
+.fav-btn .fas.fa-heart { 
+    color: #ff4d4d; 
+}
+
+.fav-btn .fa-regular.fa-heart { 
+    color: #aaa; 
+}
+
+.filter-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 1.2em 1.5em;
+    margin: 1.5em 0 1.5em 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7em;
+    align-items: center;
+}
+
+.filter-bar input, 
+.filter-bar select {
+    padding: 0.6em;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+    background: #f9f9f9;
+    min-width: 150px;
+}
+
+.filter-bar button {
+    background: #ff7300;
+    color: #fff;
+    border: none;
+    padding: 0.6em 1.2em;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background 0.2s;
+}
+
+.filter-bar button:hover {
+    background: #ff9500;
+}
+
+.filter-bar button i { 
+    margin-right: 0; 
+}
+
+.browse-grid .recipe-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5em;
+    padding: 1em 0;
+    justify-content: flex-start;
+}
+
+.browse-grid .recipe-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 1em;
+    margin-bottom: 1em;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: box-shadow 0.2s, transform 0.2s;
+    position: relative;
+}
+
+.browse-grid .recipe-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+}
+
+.browse-grid .recipe-card img {
+    border-radius: 8px;
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    margin-bottom: 0.7em;
+}
+
+.browse-grid .card-content {
+    width: 100%;
+    text-align: left;
+}
+
+.browse-grid .card-content h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.browse-grid .card-content h3 a {
+    color: #222;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.browse-grid .card-content h3 a:hover {
+    color: #ff7300;
+}
+
+.browse-grid .card-content p {
+    color: #444;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+.browse-grid .card-meta {
+    margin-top: 0.5em;
+    font-size: 0.95em;
+    color: #666;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.browse-grid .card-meta i {
+    margin-right: 0.3rem;
+    color: #ff7300;
+}
+
+.browse-grid .popularity {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+/* Responsive adjustments for browse page */
+@media (max-width: 1100px) {
+    .browse-grid .recipe-cards {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .filter-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-bar input, 
+    .filter-bar select {
+        width: 100%;
+        margin-bottom: 0.5em;
+    }
+    
+    .browse-grid .recipe-card {
+        width: 100%;
+        max-width: 400px;
+    }
+}
+
+/* Recipe Detail Page Styles */
+.recipe-detail-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.recipe-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.recipe-image img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.recipe-info h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #222;
+}
+
+.recipe-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.category-badge {
+    background: #ff7300;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.recipe-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.recipe-meta i {
+    color: #ff7300;
+}
+
+.recipe-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #444;
+    margin-bottom: 2rem;
+}
+
+.favorite-btn {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s;
+    margin-right: 1rem;
+}
+
+.favorite-btn:hover {
+    background: #ff3333;
+}
+
+.owner-actions {
+    margin-top: 1rem;
+}
+
+.owner-actions .btn {
+    margin-right: 0.5rem;
+}
+
+.recipe-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+}
+
+.ingredients-section,
+.instructions-section {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.ingredients-section h2,
+.instructions-section h2 {
+    color: #222;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ingredients-section h2 i,
+.instructions-section h2 i {
+    color: #ff7300;
+}
+
+.ingredients-list {
+    list-style: none;
+    padding: 0;
+}
+
+.ingredients-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.ingredients-list li:before {
+    content: "•";
+    color: #ff7300;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+.instructions-list {
+    counter-reset: step-counter;
+    list-style: none;
+    padding: 0;
+}
+
+.instructions-list li {
+    counter-increment: step-counter;
+    margin-bottom: 1.5rem;
+    padding-left: 3rem;
+    position: relative;
+    line-height: 1.6;
+}
+
+.instructions-list li:before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: #ff7300;
+    color: white;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.reviews-section {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-bottom: 2rem;
+}
+
+.reviews-section h2 {
+    color: #222;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.reviews-section h2 i {
+    color: #ff7300;
+}
+
+.avg-rating {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.avg-rating .stars i {
+    color: #ffc107;
+    margin-right: 0.2rem;
+}
+
+.review-form {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.review-form h3 {
+    margin-bottom: 1rem;
+    color: #222;
+}
+
+.rating-input {
+    margin-bottom: 1rem;
+}
+
+.stars-input {
+    display: flex;
+    gap: 0.2rem;
+    margin-top: 0.5rem;
+}
+
+.stars-input input[type="radio"] {
+    display: none;
+}
+
+.stars-input label {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #ddd;
+    transition: color 0.2s;
+}
+
+.stars-input input[type="radio"]:checked ~ label,
+.stars-input label:hover,
+.stars-input label:hover ~ label {
+    color: #ffc107;
+}
+
+.review-form textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    resize: vertical;
+    margin-bottom: 1rem;
+}
+
+.reviews-list {
+    margin-top: 2rem;
+}
+
+.review-item {
+    border-bottom: 1px solid #eee;
+    padding: 1.5rem 0;
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+}
+
+.review-author {
+    font-weight: 600;
+    color: #222;
+}
+
+.review-rating i {
+    color: #ffc107;
+    margin-right: 0.1rem;
+}
+
+.review-date {
+    color: #888;
+    font-size: 0.9rem;
+    margin-left: auto;
+}
+
+.review-text {
+    color: #444;
+    line-height: 1.5;
+}
+
+.no-reviews {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    padding: 2rem;
+}
+
+.back-link {
+    text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .recipe-detail-container {
+        padding: 1rem;
+    }
+    
+    .recipe-header {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .recipe-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .recipe-info h1 {
+        font-size: 2rem;
+    }
+    
+    .recipe-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+/* No Featured Recipes State */
+.no-featured {
+    text-align: center;
+    padding: 3rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    margin: 2rem 0;
+}
+
+.no-featured p {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.no-featured .btn {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background: #ff7300;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.no-featured .btn:hover {
+    background: #ff9500;
+}
+
+/* Featured recipes card links */
+.featured .recipe-card h3 a {
+    color: #222;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.featured .recipe-card h3 a:hover {
+    color: #ff7300;
+}
+
+.featured .recipe-card img {
+    transition: transform 0.2s;
+}
+
+.featured .recipe-card:hover img {
+    transform: scale(1.05);
+}
+
+.login-prompt {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.login-prompt p {
+    margin: 0;
+    color: #666;
+}
+
+.login-prompt a {
+    color: #ff7300;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-prompt a:hover {
+    text-decoration: underline;
+}
+
+.stars-input {
+    display: flex;
+    gap: 0.2rem;
+    margin-top: 0.5rem;
+}
+
+.stars-input input[type="radio"] {
+    display: none;
+}
+
+.stars-input label {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #ddd;
+    transition: color 0.2s;
+}
+
+.stars-input input[type="radio"]:checked ~ label,
+.stars-input label:hover,
+.stars-input input[type="radio"]:checked + label,
+.stars-input label:hover ~ label {
+    color: #ffc107;
+}
+
+/* Fix star rating interaction */
+.stars-input input[type="radio"]:checked + label ~ label {
+    color: #ddd;
+}
+
+.stars-input:hover label {
+    color: #ddd;
+}
+
+.stars-input label:hover,
+.stars-input label:hover ~ label {
+    color: #ffc107;
+}
+
+.pending-review {
+    opacity: 0.7;
+    border-left: 4px solid #ffc107;
+    padding-left: 1rem;
+    background-color: #fff9e6;
+}
+
+.review-status {
+    margin-bottom: 0.5rem;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.status-badge.pending {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.status-badge.approved {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}

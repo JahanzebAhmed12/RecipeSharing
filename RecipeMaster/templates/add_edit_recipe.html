@@ -1,107 +1,144 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add New Recipe - RecipeMaster</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="form-bg">
-    <header class="navbar">
-        <div class="logo">
-            <i class="fa-solid fa-hat-chef"></i>
-            <span>RecipeShare</span>
-        </div>
-        <nav>
-            <a href="/">Home</a>
-            <a href="/recipes">Browse Recipes</a>
-            <a href="/add-recipe" class="add-recipe-link">+ Add Recipe</a>
-        </nav>
-        <form class="search-bar">
-            <input type="text" placeholder="Search recipes...">
-            <button type="submit"><i class="fa fa-search"></i></button>
-        </form>
-        <div class="user-icons">
-            <a href="#"><i class="fa-regular fa-heart"></i></a>
-            <a href="#"><i class="fa-regular fa-user"></i> Jahanzeb Ahmed</a>
-        </div>
-    </header>
-    <main class="recipe-form-container">
-        <form class="recipe-form" method="POST" enctype="multipart/form-data">
-            <h1>Add New Recipe</h1>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Recipe Title *</label>
-                    <input type="text" name="title" placeholder="Enter recipe title" required>
-                </div>
-                <div class="form-group">
-                    <label>Category *</label>
-                    <select name="category" required>
-                        <option value="">Select category</option>
-                        <option>Breakfast</option>
-                        <option>Lunch</option>
-                        <option>Dinner</option>
-                        <option>Dessert</option>
-                        <option>Snack</option>
-                        <option>Salad</option>
-                        <option>Soup</option>
-                        <option>Drink</option>
-                    </select>
-                </div>
+{% extends "base.html" %}
+
+{% block title %}{% if recipe %}Edit Recipe{% else %}Add New Recipe{% endif %} - RecipeMaster{% endblock %}
+
+{% block content %}
+<main class="recipe-form-container">
+    <form class="recipe-form" method="POST" enctype="multipart/form-data">
+        <h1>{% if recipe %}Edit Recipe{% else %}Add New Recipe{% endif %}</h1>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Recipe Title *</label>
+                <input type="text" name="title" placeholder="Enter recipe title" value="{{ recipe.title if recipe else '' }}" required>
             </div>
             <div class="form-group">
-                <label>Description *</label>
-                <textarea name="description" placeholder="Describe your recipe..." required></textarea>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Cooking Time (minutes)</label>
-                    <input type="number" name="cooking_time" placeholder="30">
-                </div>
-                <div class="form-group">
-                    <label>Servings</label>
-                    <input type="number" name="servings" placeholder="4">
-                </div>
-                <div class="form-group">
-                    <label>Difficulty</label>
-                    <select name="difficulty">
-                        <option>Easy</option>
-                        <option>Medium</option>
-                        <option>Hard</option>
-                    </select>
-                </div>
+                <label>Category *</label>
+                <select name="category" required>
+                    <option value="">Select category</option>
+                    <option {% if recipe and recipe.category == 'Breakfast' %}selected{% endif %}>Breakfast</option>
+                    <option {% if recipe and recipe.category == 'Lunch' %}selected{% endif %}>Lunch</option>
+                    <option {% if recipe and recipe.category == 'Dinner' %}selected{% endif %}>Dinner</option>
+                    <option {% if recipe and recipe.category == 'Dessert' %}selected{% endif %}>Dessert</option>
+                    <option {% if recipe and recipe.category == 'Snack' %}selected{% endif %}>Snack</option>
+                    <option {% if recipe and recipe.category == 'Salad' %}selected{% endif %}>Salad</option>
+                    <option {% if recipe and recipe.category == 'Soup' %}selected{% endif %}>Soup</option>
+                    <option {% if recipe and recipe.category == 'Drink' %}selected{% endif %}>Drink</option>
+                </select>
             </div>
             <div class="form-group">
-                <label>Recipe Image</label>
-                <div class="image-upload-box">
-                    <i class="fa fa-upload"></i>
-                    <span>Click to upload recipe image</span>
-                    <input type="file" name="image" accept="image/*">
-                    <button type="button" class="choose-image-btn">Choose Image</button>
-                </div>
+                <label>Dietary Preference *</label>
+                <select name="dietary_preference" required>
+                    <option value="">Select preference</option>
+                    <option {% if recipe and recipe.dietary_preference == 'Vegetarian' %}selected{% endif %}>Vegetarian</option>
+                    <option {% if recipe and recipe.dietary_preference == 'Vegan' %}selected{% endif %}>Vegan</option>
+                    <option {% if recipe and recipe.dietary_preference == 'Non-Vegetarian' %}selected{% endif %}>Non-Vegetarian</option>
+                </select>
             </div>
-            <div class="form-group ingredients-group">
-                <label>Ingredients *</label>
-                <div class="ingredients-list">
+        </div>
+        <div class="form-group">
+            <label>Description *</label>
+            <textarea name="description" placeholder="Describe your recipe..." required>{{ recipe.description if recipe else '' }}</textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Cooking Time (minutes)</label>
+                <input type="number" name="cooking_time" placeholder="30" value="{{ recipe.cooking_time if recipe else '' }}">
+            </div>
+            <div class="form-group">
+                <label>Servings</label>
+                <input type="number" name="servings" placeholder="4" value="{{ recipe.servings if recipe else '' }}">
+            </div>
+            <div class="form-group">
+                <label>Difficulty</label>
+                <select name="difficulty">
+                    <option {% if recipe and recipe.difficulty == 'Easy' %}selected{% endif %}>Easy</option>
+                    <option {% if recipe and recipe.difficulty == 'Medium' %}selected{% endif %}>Medium</option>
+                    <option {% if recipe and recipe.difficulty == 'Hard' %}selected{% endif %}>Hard</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Recipe Image</label>
+            <div class="image-upload-box">
+                <i class="fa fa-upload"></i>
+                <span>Click to upload recipe image</span>
+                <input type="file" name="image" accept="image/*">
+                <button type="button" class="choose-image-btn">Choose Image</button>
+            </div>
+        </div>
+        <div class="form-group ingredients-group">
+            <label>Ingredients *</label>
+            <div class="ingredients-list">
+                {% if recipe and recipe.ingredients %}
+                    {% for ingredient in recipe.ingredients.split('\n') %}
+                        <input type="text" name="ingredient{{ loop.index }}" placeholder="Ingredient {{ loop.index }}" value="{{ ingredient }}" {% if loop.index == 1 %}required{% endif %}>
+                    {% endfor %}
+                {% else %}
                     <input type="text" name="ingredient1" placeholder="Ingredient 1" required>
-                </div>
-                <button type="button" class="add-ingredient-btn"><i class="fa fa-plus"></i> Add Ingredient</button>
+                {% endif %}
             </div>
-            <div class="form-group instructions-group">
-                <label>Instructions *</label>
-                <div class="instructions-list">
+            <button type="button" class="add-ingredient-btn"><i class="fa fa-plus"></i> Add Ingredient</button>
+        </div>
+        <div class="form-group instructions-group">
+            <label>Instructions *</label>
+            <div class="instructions-list">
+                {% if recipe and recipe.steps %}
+                    {% for step in recipe.steps.split('\n') %}
+                        <div class="instruction-step">
+                            <span class="step-number">{{ loop.index }}</span>
+                            <textarea name="instruction{{ loop.index }}" placeholder="Step {{ loop.index }} instructions..." {% if loop.index == 1 %}required{% endif %}>{{ step }}</textarea>
+                        </div>
+                    {% endfor %}
+                {% else %}
                     <div class="instruction-step">
                         <span class="step-number">1</span>
                         <textarea name="instruction1" placeholder="Step 1 instructions..." required></textarea>
                     </div>
-                </div>
-                <button type="button" class="add-step-btn"><i class="fa fa-plus"></i> Add Step</button>
+                {% endif %}
             </div>
-            <div class="form-actions">
-                <button type="button" class="cancel-btn">Cancel</button>
-                <button type="submit" class="btn save-btn"><i class="fa fa-save"></i> Save Recipe</button>
-            </div>
-        </form>
-    </main>
-</body>
-</html> 
+            <button type="button" class="add-step-btn"><i class="fa fa-plus"></i> Add Step</button>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="cancel-btn" onclick="window.history.back()">Cancel</button>
+            <button type="submit" class="btn save-btn"><i class="fa fa-save"></i> {% if recipe %}Update Recipe{% else %}Save Recipe{% endif %}</button>
+        </div>
+    </form>
+</main>
+
+<script>
+// Add ingredient functionality
+document.querySelector('.add-ingredient-btn').addEventListener('click', function() {
+    const ingredientsList = document.querySelector('.ingredients-list');
+    const ingredientCount = ingredientsList.children.length + 1;
+    const newInput = document.createElement('input');
+    newInput.type = 'text';
+    newInput.name = `ingredient${ingredientCount}`;
+    newInput.placeholder = `Ingredient ${ingredientCount}`;
+    ingredientsList.appendChild(newInput);
+});
+
+// Add instruction step functionality
+document.querySelector('.add-step-btn').addEventListener('click', function() {
+    const instructionsList = document.querySelector('.instructions-list');
+    const stepCount = instructionsList.children.length + 1;
+    const newStep = document.createElement('div');
+    newStep.className = 'instruction-step';
+    newStep.innerHTML = `
+        <span class="step-number">${stepCount}</span>
+        <textarea name="instruction${stepCount}" placeholder="Step ${stepCount} instructions..."></textarea>
+    `;
+    instructionsList.appendChild(newStep);
+});
+
+// Image upload functionality
+document.querySelector('.choose-image-btn').addEventListener('click', function() {
+    document.querySelector('input[name="image"]').click();
+});
+
+// Show selected file name
+document.querySelector('input[name="image"]').addEventListener('change', function() {
+    const fileName = this.files[0] ? this.files[0].name : 'No file selected';
+    document.querySelector('.image-upload-box span').textContent = fileName;
+});
+</script>
+{% endblock %} 
