@@ -192,6 +192,26 @@ def admin_resolve_report(recipe_id):
         return jsonify({'success': True})
     return jsonify({'error': 'Method not allowed'}), 405
 
+@app.route('/admin/recipe/<int:recipe_id>/approve', methods=['POST'])
+@admin_required
+def admin_approve_recipe(recipe_id):
+    if request.method == 'POST':
+        recipe = Recipe.query.get_or_404(recipe_id)
+        recipe.approved = True
+        db.session.commit()
+        return jsonify({'success': True})
+    return jsonify({'error': 'Method not allowed'}), 405
+
+@app.route('/admin/recipe/<int:recipe_id>/disapprove', methods=['POST'])
+@admin_required
+def admin_disapprove_recipe(recipe_id):
+    if request.method == 'POST':
+        recipe = Recipe.query.get_or_404(recipe_id)
+        recipe.approved = False
+        db.session.commit()
+        return jsonify({'success': True})
+    return jsonify({'error': 'Method not allowed'}), 405
+
 @app.route('/admin/recipe/<int:recipe_id>/delete', methods=['POST'])
 @admin_required
 def admin_delete_recipe(recipe_id):
@@ -214,7 +234,7 @@ def home():
     # Get featured recipes (most rated/reviewed recipes)
     featured_recipes = db.session.query(Recipe)\
         .join(Review, Recipe.id == Review.recipe_id, isouter=True)\
-        .filter(Recipe.is_published == True)\
+        .filter(Recipe.is_published == True, Recipe.approved == True)\
         .group_by(Recipe.id)\
         .order_by(db.func.avg(Review.rating).desc().nullslast(), Recipe.popularity.desc())\
         .limit(6).all()
@@ -244,13 +264,32 @@ def search():
     query = request.args.get('q', '').strip()
     if not query:
         return redirect(url_for('recipes'))  # Changed from 'browse_recipes' to 'recipes'
-        
+    
+    # Check if user is admin
+    user_id = None
+    user = None
+    try:
+        user_id = get_jwt_identity()
+        user = User.query.get(user_id) if user_id else None
+    except Exception:
+        pass
+    
     # Search in recipe title, description, and ingredients
-    recipes = Recipe.query.filter(
-        (Recipe.title.ilike(f'%{query}%')) |
-        (Recipe.description.ilike(f'%{query}%')) |
-        (Recipe.ingredients.ilike(f'%{query}%'))
-    ).all()
+    if user and user.role == 'Admin':
+        # Admins can see all recipes
+        recipes = Recipe.query.filter(
+            (Recipe.title.ilike(f'%{query}%')) |
+            (Recipe.description.ilike(f'%{query}%')) |
+            (Recipe.ingredients.ilike(f'%{query}%'))
+        ).all()
+    else:
+        # Regular users only see approved recipes
+        recipes = Recipe.query.filter(
+            Recipe.approved == True,
+            (Recipe.title.ilike(f'%{query}%')) |
+            (Recipe.description.ilike(f'%{query}%')) |
+            (Recipe.ingredients.ilike(f'%{query}%'))
+        ).all()
     
     # Format recipes for the template
     recipe_list = []

@@ -15,6 +15,8 @@
                 <option value="published">Published</option>
                 <option value="draft">Draft</option>
                 <option value="reported">Reported</option>
+                <option value="approved">Approved</option>
+                <option value="pending">Pending Approval</option>
             </select>
         </div>
 
@@ -27,6 +29,7 @@
                         <th>Author</th>
                         <th>Category</th>
                         <th>Status</th>
+                        <th>Approval</th>
                         <th>Created</th>
                         <th>Actions</th>
                     </tr>
@@ -34,6 +37,7 @@
                 <tbody>
                     {% for recipe in recipes %}
                     <tr data-status="{{ 'published' if recipe.is_published else 'draft' }}" 
+                        data-approval="{{ 'approved' if recipe.approved else 'pending' }}"
                         data-title="{{ recipe.title|lower }}">
                         <td>{{ recipe.id }}</td>
                         <td>
@@ -52,11 +56,27 @@
                                 <span class="status-badge status-draft">Draft</span>
                             {% endif %}
                         </td>
+                        <td>
+                            {% if recipe.approved %}
+                                <span class="status-badge status-approved">Approved</span>
+                            {% else %}
+                                <span class="status-badge status-pending">Pending</span>
+                            {% endif %}
+                        </td>
                         <td>{{ recipe.created_at.strftime('%Y-%m-%d') }}</td>
                         <td class="actions">
                             <a href="{{ url_for('edit_recipe', recipe_id=recipe.id) }}" class="btn btn-edit">
                                 Edit
                             </a>
+                            {% if recipe.approved %}
+                                <button onclick="updateApprovalStatus('{{ recipe.id }}', false)" class="btn btn-warning">
+                                    Disapprove
+                                </button>
+                            {% else %}
+                                <button onclick="updateApprovalStatus('{{ recipe.id }}', true)" class="btn btn-success">
+                                    Approve
+                                </button>
+                            {% endif %}
                             {% if recipe.is_reported %}
                                 <button onclick="resolveReport('{{ recipe.id }}')" class="btn btn-success">
                                     Resolve
@@ -78,7 +98,7 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="7" style="text-align: center;">No recipes found</td>
+                        <td colspan="8" style="text-align: center;">No recipes found</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -99,8 +119,19 @@ function filterRecipes() {
     rows.forEach(row => {
         const title = row.getAttribute('data-title') || '';
         const status = row.getAttribute('data-status');
+        const approval = row.getAttribute('data-approval');
         const matchesSearch = title.includes(searchTerm);
-        const matchesStatus = statusFilter === 'all' || status === statusFilter;
+        
+        let matchesStatus = false;
+        if (statusFilter === 'all') {
+            matchesStatus = true;
+        } else if (statusFilter === 'approved') {
+            matchesStatus = approval === 'approved';
+        } else if (statusFilter === 'pending') {
+            matchesStatus = approval === 'pending';
+        } else {
+            matchesStatus = status === statusFilter;
+        }
         
         if (matchesSearch && matchesStatus) {
             row.style.display = '';
@@ -113,6 +144,33 @@ function filterRecipes() {
 // Add event listeners for filters
 document.getElementById('searchInput').addEventListener('input', filterRecipes);
 document.getElementById('statusFilter').addEventListener('change', filterRecipes);
+
+function updateApprovalStatus(recipeId, isApproved) {
+    const action = isApproved ? 'approve' : 'disapprove';
+    const actionText = isApproved ? 'approve' : 'disapprove';
+    
+    if (confirm(`Are you sure you want to ${actionText} this recipe?`)) {
+        fetch(`/admin/recipe/${recipeId}/${action}`, { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+        })
+        .then(function(response) {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert(`Failed to ${actionText} recipe`);
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            alert(`An error occurred while trying to ${actionText} the recipe`);
+        });
+    }
+}
 
 function updateRecipeStatus(recipeId, isPublished) {
     const action = isPublished ? 'publish' : 'unpublish';

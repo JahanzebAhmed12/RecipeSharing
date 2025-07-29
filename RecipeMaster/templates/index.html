@@ -9,6 +9,9 @@
     <div class="hero-actions">
         <a href="/recipes" class="btn primary"><i class="fa fa-search"></i> Browse Recipes</a>
         <a href="/add-recipe" class="btn secondary"><i class="fa fa-plus"></i> Share Your Recipe</a>
+        {% if current_user and current_user.role == 'Admin' %}
+        <a href="/admin" class="btn admin-btn"><i class="fa fa-shield-alt"></i> Admin Dashboard</a>
+        {% endif %}
     </div>
 </section>
 
