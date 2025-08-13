@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block title %}About Us - TastyShare{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1><i class="fas fa-info-circle"></i> About TastyShare</h1>
+        <p class="page-subtitle">Discover the story behind your favorite recipe sharing platform</p>
+    </div>
+
+    <div class="content-section">
+        <div class="about-grid">
+            <div class="about-card">
+                <div class="card-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3>Our Mission</h3>
+                <p>To bring food lovers together by creating a platform where anyone can discover, share, and celebrate amazing recipes from around the world.</p>
+            </div>
+
+            <div class="about-card">
+                <div class="card-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Our Community</h3>
+                <p>Join thousands of home cooks, professional chefs, and food enthusiasts who share their culinary creations and inspire others to cook.</p>
+            </div>
+
+            <div class="about-card">
+                <div class="card-icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <h3>Our Platform</h3>
+                <p>A user-friendly platform designed to make recipe sharing simple, with powerful search features and a supportive community.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h2>What Makes TastyShare Special?</h2>
+        <div class="features-list">
+            <div class="feature-item">
+                <i class="fas fa-search"></i>
+                <div>
+                    <h4>Smart Search</h4>
+                    <p>Find recipes by ingredients, cooking time, dietary preferences, and more with our advanced search system.</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-star"></i>
+                <div>
+                    <h4>Recipe Reviews</h4>
+                    <p>Rate and review recipes to help others discover the best dishes and share your cooking experiences.</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-heart"></i>
+                <div>
+                    <h4>Personal Favorites</h4>
+                    <p>Save your favorite recipes to your personal collection for quick access whenever you need them.</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-edit"></i>
+                <div>
+                    <h4>Easy Recipe Creation</h4>
+                    <p>Share your own recipes with our intuitive recipe builder, complete with photos and step-by-step instructions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h2>Our Story</h2>
+        <div class="story-content">
+            <p>TastyShare was born from a simple idea: cooking brings people together, and great recipes should be shared. We believe that every dish tells a story, whether it's a family recipe passed down through generations or a creative new fusion that pushes culinary boundaries.</p>
+            
+            <p>Our platform is designed to celebrate the diversity of global cuisine while making it easy for anyone to discover new flavors and cooking techniques. From quick weeknight dinners to elaborate holiday feasts, TastyShare is your companion in the kitchen.</p>
+            
+            <p>We're committed to building a supportive community where both novice cooks and experienced chefs can learn from each other, share their passion for food, and inspire others to create delicious meals.</p>
+        </div>
+    </div>
+
+
+</div>
+
+<style>
+.page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.page-header i {
+    color: #ff7300;
+    margin-right: 0.5rem;
+}
+
+.page-subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.content-section {
+    margin-bottom: 3rem;
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.about-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.about-card:hover {
+    transform: translateY(-5px);
+}
+
+.card-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #ff7300, #ff9500);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+
+.card-icon i {
+    font-size: 2rem;
+    color: white;
+}
+
+.about-card h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.about-card p {
+    color: #666;
+    line-height: 1.6;
+}
+
+.features-list {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.feature-item i {
+    font-size: 1.5rem;
+    color: #ff7300;
+    margin-top: 0.1rem;
+    min-width: 24px;
+    flex-shrink: 0;
+}
+
+.feature-item h4 {
+    font-size: 1.2rem;
+    color: #333;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.3;
+}
+
+.feature-item p {
+    color: #666;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.story-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.story-content p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #555;
+    margin-bottom: 1.5rem;
+}
+
+.story-content p:last-child {
+    margin-bottom: 0;
+}
+
+.cta-section {
+    text-align: center;
+    background: linear-gradient(135deg, #ff7300, #ff9500);
+    color: white;
+    padding: 3rem 2rem;
+    border-radius: 16px;
+}
+
+.cta-section h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.cta-section p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.cta-buttons .btn {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.cta-buttons .btn-primary {
+    background: white;
+    color: #ff7300;
+}
+
+.cta-buttons .btn-primary:hover {
+    background: #f8f9fa;
+    transform: translateY(-2px);
+}
+
+.cta-buttons .btn-secondary {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 2px solid white;
+}
+
+.cta-buttons .btn-secondary:hover {
+    background: white;
+    color: #ff7300;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .page-container {
+        padding: 1rem;
+    }
+    
+    .page-header h1 {
+        font-size: 2rem;
+    }
+    
+    .about-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .feature-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .cta-buttons .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+</style>
+{% endblock %}

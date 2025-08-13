@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - TastyShare{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1><i class="fas fa-envelope"></i> Contact Us</h1>
+        <p class="page-subtitle">We'd love to hear from you! Get in touch with our team</p>
+    </div>
+
+    <div class="contact-content">
+        <div class="contact-grid">
+            <!-- Contact Form -->
+            <div class="contact-form-section">
+                <h2>Send us a Message</h2>
+                <form method="POST" class="contact-form" id="contactForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">
+                                <i class="fas fa-user"></i> Full Name *
+                            </label>
+                            <input type="text" id="name" name="name" required 
+                                   placeholder="Enter your full name"
+                                   value="{{ request.form.name if request.form else '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">
+                                <i class="fas fa-envelope"></i> Email Address *
+                            </label>
+                            <input type="email" id="email" name="email" required 
+                                   placeholder="Enter your email address"
+                                   value="{{ request.form.email if request.form else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">
+                            <i class="fas fa-tag"></i> Subject *
+                        </label>
+                        <select id="subject" name="subject" required>
+                            <option value="">Select a subject</option>
+                            <option value="General Inquiry" {% if request.form.subject == 'General Inquiry' %}selected{% endif %}>General Inquiry</option>
+                            <option value="Technical Support" {% if request.form.subject == 'Technical Support' %}selected{% endif %}>Technical Support</option>
+                            <option value="Recipe Issues" {% if request.form.subject == 'Recipe Issues' %}selected{% endif %}>Recipe Issues</option>
+                            <option value="Account Problems" {% if request.form.subject == 'Account Problems' %}selected{% endif %}>Account Problems</option>
+                            <option value="Feature Request" {% if request.form.subject == 'Feature Request' %}selected{% endif %}>Feature Request</option>
+                            <option value="Partnership" {% if request.form.subject == 'Partnership' %}selected{% endif %}>Partnership Opportunity</option>
+                            <option value="Feedback" {% if request.form.subject == 'Feedback' %}selected{% endif %}>Feedback & Suggestions</option>
+                            <option value="Other" {% if request.form.subject == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">
+                            <i class="fas fa-comment"></i> Message *
+                        </label>
+                        <textarea id="message" name="message" required 
+                                  placeholder="Tell us how we can help you..."
+                                  rows="6">{{ request.form.message if request.form else '' }}</textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary submit-btn">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+                </form>
+            </div>
+
+
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h4><i class="fas fa-question-circle"></i> How do I submit a recipe?</h4>
+                    <p>Simply create an account, log in, and click "Add Recipe" to share your culinary creations with our community.</p>
+                </div>
+                <div class="faq-item">
+                    <h4><i class="fas fa-question-circle"></i> Why isn't my recipe showing up?</h4>
+                    <p>All recipes go through a moderation process to ensure quality. Your recipe will be visible once approved by our team.</p>
+                </div>
+                <div class="faq-item">
+                    <h4><i class="fas fa-question-circle"></i> Can I edit my recipes?</h4>
+                    <p>Yes! You can edit your own recipes at any time. Edited recipes may need re-approval before being visible to others.</p>
+                </div>
+                <div class="faq-item">
+                    <h4><i class="fas fa-question-circle"></i> How do I reset my password?</h4>
+                    <p>Click "Forgot your password?" on the login page and follow the instructions sent to your email address.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.page-header i {
+    color: #ff7300;
+    margin-right: 0.5rem;
+}
+
+.page-subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.contact-content {
+    margin-bottom: 3rem;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+}
+
+.contact-form-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.contact-form-section h2 {
+    color: #333;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-group label i {
+    color: #ff7300;
+    width: 16px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 0.75rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #ff7300;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #ff7300, #ff9500);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 115, 0, 0.3);
+}
+
+
+
+.faq-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.faq-section h2 {
+    color: #333;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-size: 1.8rem;
+}
+
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.faq-item {
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #ff7300;
+}
+
+.faq-item h4 {
+    color: #333;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.faq-item h4 i {
+    color: #ff7300;
+}
+
+.faq-item p {
+    color: #666;
+    line-height: 1.5;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .page-container {
+        padding: 1rem;
+    }
+    
+    .page-header h1 {
+        font-size: 2rem;
+    }
+    
+    .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+
+    
+    .faq-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    const submitBtn = document.querySelector('.submit-btn');
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    submitBtn.disabled = true;
+});
+</script>
+{% endblock %}

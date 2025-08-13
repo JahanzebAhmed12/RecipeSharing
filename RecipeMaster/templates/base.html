@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}RecipeMaster{% endblock %}</title>
+    <title>{% block title %}TastyShare{% endblock %}</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     {% block extra_css %}{% endblock %}
@@ -13,22 +13,20 @@
         <div class="logo">
             <i class="fa-solid fa-hat-chef"></i>
             <a href="{{ url_for('home') }}" style="text-decoration: none; color: inherit;">
-                <span>RecipeShare</span>
+                <span>Tasty Share</span>
             </a>
         </div>
         <nav>
             <a href="{{ url_for('home') }}" {% if request.endpoint == 'home' %}class="active"{% endif %}>Home</a>
             <a href="{{ url_for('recipes') }}" {% if request.endpoint == 'recipes' %}class="active"{% endif %}>Browse Recipes</a>
+            <a href="{{ url_for('about') }}" {% if request.endpoint == 'about' %}class="active"{% endif %}>About Us</a>
+            <a href="{{ url_for('contact') }}" {% if request.endpoint == 'contact' %}class="active"{% endif %}>Contact</a>
+            <a href="{{ url_for('terms') }}" {% if request.endpoint == 'terms' %}class="active"{% endif %}>Terms</a>
             {% if current_user.is_authenticated and current_user.role == 'Admin' %}
             <a href="{{ url_for('admin_dashboard') }}" {% if request.path.startswith('/admin') %}class="active"{% endif %}>Admin</a>
             {% endif %}
         </nav>
-        {% if request.endpoint != 'home' %}
-        <form class="search-bar" action="{{ url_for('search') }}" method="GET">
-            <input type="text" name="q" placeholder="Search recipes..." value="{{ request.args.get('q', '') }}">
-            <button type="submit"><i class="fa fa-search"></i></button>
-        </form>
-        {% endif %}
+
         {% if current_user.is_authenticated %}
         <div class="user-menu">
             <button class="user-menu-btn" onclick="toggleDropdown()">
@@ -80,26 +78,60 @@
     </main>
 
     {% block footer %}
-    <!-- <footer>
+    <footer class="site-footer">
         <div class="footer-content">
             <div class="footer-section">
-                <h3>RecipeShare</h3>
-                <p>Discover and share amazing recipes from around the world.</p>
+                <div class="footer-logo">
+                    <i class="fa-solid fa-hat-chef"></i>
+                    <h3>TastyShare</h3>
+                </div>
+                <p>Discover and share amazing recipes from around the world. Join our community of food lovers and culinary enthusiasts.</p>
             </div>
+            
             <div class="footer-section">
-                <h3>Quick Links</h3>
+                <h4>Quick Links</h4>
                 <ul>
                     <li><a href="{{ url_for('home') }}">Home</a></li>
-                    <li><a href="{{ url_for('recipes') }}">Recipes</a></li>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="{{ url_for('recipes') }}">Browse Recipes</a></li>
+                    {% if current_user and current_user.is_authenticated %}
+                    <li><a href="{{ url_for('add_recipe') }}">Add Recipe</a></li>
+                    <li><a href="{{ url_for('profile') }}">My Profile</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Categories</h4>
+                <ul>
+                    <li><a href="{{ url_for('recipes', category='Breakfast') }}">Breakfast</a></li>
+                    <li><a href="{{ url_for('recipes', category='Lunch') }}">Lunch</a></li>
+                    <li><a href="{{ url_for('recipes', category='Dinner') }}">Dinner</a></li>
+                    <li><a href="{{ url_for('recipes', category='Dessert') }}">Desserts</a></li>
+                    <li><a href="{{ url_for('recipes', category='Snack') }}">Snacks</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="{{ url_for('about') }}">About Us</a></li>
+                    <li><a href="{{ url_for('contact') }}">Contact Us</a></li>
+                    <li><a href="{{ url_for('terms') }}">Terms & Conditions</a></li>
                 </ul>
             </div>
         </div>
+        
         <div class="footer-bottom">
-            <p>&copy; {{ now.year }} RecipeShare. All rights reserved.</p>
+            <div class="footer-bottom-content">
+                <p>&copy; {{ now.year }} TastyShare. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="{{ url_for('terms') }}">Terms</a>
+                    <span>•</span>
+                    <a href="{{ url_for('contact') }}">Contact</a>
+                </div>
+            </div>
         </div>
-    </footer> -->
+    </footer>
     {% endblock %}
 
     {% block scripts %}

@@ -76,7 +76,7 @@
     <div class="container">
         <div class="admin-footer-content">
             <div class="admin-footer-section">
-                <h3>RecipeMaster Admin</h3>
+                <h3>TastyShare Admin</h3>
                 <p>Manage users, recipes, and content with our powerful admin tools.</p>
             </div>
             <div class="admin-footer-section">
@@ -90,12 +90,16 @@
             </div>
             <div class="admin-footer-section">
                 <h3>Support</h3>
-                <p>Need help? Contact our support team.</p>
-                <p>Email: support@recipemaster.com</p>
+                <ul>
+                    <li><a href="{{ url_for('about') }}">About Us</a></li>
+                    <li><a href="{{ url_for('contact') }}">Contact Us</a></li>
+                    <li><a href="{{ url_for('terms') }}">Terms & Conditions</a></li>
+                </ul>
+                <p>Email: support@TastyShare.com</p>
             </div>
         </div>
         <div class="admin-footer-bottom">
-            <p>&copy; 2025 RecipeMaster. All rights reserved.</p>
+            <p>&copy; 2025 TastyShare. All rights reserved.</p>
         </div>
     </div>
 </footer>

@@ -19,6 +19,8 @@ class Recipe(db.Model):
     steps = db.Column(db.Text, nullable=False)
     category = db.Column(db.String(50))
     cooking_time = db.Column(db.Integer)
+    servings = db.Column(db.Integer)
+    difficulty = db.Column(db.String(20))
     image_url = db.Column(db.String(300))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User', backref='recipes')

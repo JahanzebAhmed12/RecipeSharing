@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}RecipeMaster - Home{% endblock %}
+{% block title %}TastyShare - Home{% endblock %}
 
 {% block content %}
 <section class="hero">
@@ -22,11 +22,25 @@
         {% for recipe in featured_recipes %}
         <div class="recipe-card">
             <span class="badge">{{ recipe.category or 'Recipe' }}</span>
+            {% if current_user and current_user.is_authenticated %}
             <a href="/recipe/{{ recipe.id }}">
                 <img src="{{ recipe.image_url or '/static/default_recipe.jpg' }}" alt="{{ recipe.title }}">
             </a>
+            {% else %}
+            <a href="/login" onclick="showLoginMessage()">
+                <img src="{{ recipe.image_url or '/static/default_recipe.jpg' }}" alt="{{ recipe.title }}">
+                <div class="login-overlay">
+                    <i class="fa fa-lock"></i>
+                    <span>Login to View</span>
+                </div>
+            </a>
+            {% endif %}
             <div class="card-content">
+                {% if current_user and current_user.is_authenticated %}
                 <h3><a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a></h3>
+                {% else %}
+                <h3><a href="/login" onclick="showLoginMessage()">{{ recipe.title }}</a></h3>
+                {% endif %}
                 <p>{{ recipe.description[:100] }}{% if recipe.description|length > 100 %}...{% endif %}</p>
                 <div class="card-meta">
                     <span><i class="fa-regular fa-clock"></i> {{ recipe.cooking_time or '?' }} min</span>
@@ -44,9 +58,59 @@
     </div>
 </section>
 
+{% if not current_user or not current_user.is_authenticated %}
 <section class="cta">
     <h2>Ready to Share Your Culinary Creations?</h2>
     <p>Join thousands of home cooks and professional chefs sharing their favorite recipes</p>
     <a href="/register" class="btn cta-btn">Get Started Today</a>
 </section>
+{% endif %}
+
+<style>
+.recipe-card {
+    position: relative;
+}
+
+.login-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 8px;
+}
+
+.recipe-card:hover .login-overlay {
+    opacity: 1;
+}
+
+.login-overlay i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.login-overlay span {
+    font-size: 1rem;
+}
+</style>
+
+<script>
+function showLoginMessage() {
+    // Add a small delay to show the message after navigation
+    setTimeout(function() {
+        if (window.location.pathname === '/login') {
+            // The flash message will be shown by the backend
+        }
+    }, 100);
+}
+</script>
 {% endblock %} 

@@ -29,11 +29,11 @@ app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'super-secret-jwt-key
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///recipemaster.db'
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'your_email@gmail.com'  # Replace with your Gmail
-app.config['MAIL_PASSWORD'] = 'your_app_password'     # Use App Password for Gmail
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
+app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'True').lower() == 'true'
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 db.init_app(app)
 jwt = JWTManager(app)
 mail = Mail(app)
@@ -106,9 +106,9 @@ def admin_users():
 def admin_block_user(user_id):
     if request.method == 'POST':
         user = User.query.get_or_404(user_id)
-        if user.is_admin:
+        if user.role == 'Admin':
             return jsonify({'error': 'Cannot block admin users'}), 403
-        user.is_active = False
+        user.blocked = True
         db.session.commit()
         return jsonify({'success': True})
     return jsonify({'error': 'Method not allowed'}), 405
@@ -118,9 +118,9 @@ def admin_block_user(user_id):
 def admin_unblock_user(user_id):
     if request.method == 'POST':
         user = User.query.get_or_404(user_id)
-        if user.is_admin:
+        if user.role == 'Admin':
             return jsonify({'error': 'Cannot modify admin users'}), 403
-        user.is_active = True
+        user.blocked = False
         db.session.commit()
         return jsonify({'success': True})
     return jsonify({'error': 'Method not allowed'}), 405
@@ -130,7 +130,7 @@ def admin_unblock_user(user_id):
 def admin_delete_user(user_id):
     if request.method == 'POST':
         user = User.query.get_or_404(user_id)
-        if user.is_admin:
+        if user.role == 'Admin':
             return jsonify({'error': 'Cannot delete admin users'}), 403
         
         # Delete user's recipes, favorites, and reviews
@@ -265,14 +265,25 @@ def search():
     if not query:
         return redirect(url_for('recipes'))  # Changed from 'browse_recipes' to 'recipes'
     
-    # Check if user is admin
+    # Check if user is admin and get favorites
     user_id = None
     user = None
-    try:
-        user_id = get_jwt_identity()
-        user = User.query.get(user_id) if user_id else None
-    except Exception:
-        pass
+    fav_ids = set()
+    
+    # Check session first, then JWT
+    if 'user_id' in session:
+        user_id = session['user_id']
+        user = User.query.get(user_id)
+        if user_id:
+            fav_ids = set(f.recipe_id for f in Favourite.query.filter_by(user_id=user_id).all())
+    else:
+        try:
+            user_id = get_jwt_identity()
+            user = User.query.get(user_id) if user_id else None
+            if user_id:
+                fav_ids = set(f.recipe_id for f in Favourite.query.filter_by(user_id=user_id).all())
+        except Exception:
+            pass
     
     # Search in recipe title, description, and ingredients
     if user and user.role == 'Admin':
@@ -305,7 +316,7 @@ def search():
             'image_url': r.image_url,
             'popularity': r.popularity,
             'author_name': author.name if author else 'Unknown',
-            'favourited': False  # You can implement this based on user's favorites
+            'favourited': r.id in fav_ids
         })
     
     return render_template('recipes.html', recipes=recipe_list, search_query=query)
@@ -361,8 +372,17 @@ def login():
             # Create JWT token
             access_token = create_access_token(identity=str(user.id))
             
+            # Check if there's a next URL to redirect to
+            next_url = session.pop('next_url', None)
+            if user.role == 'Admin':
+                redirect_url = url_for('admin_dashboard')
+            elif next_url and next_url.startswith('/'):
+                redirect_url = next_url
+            else:
+                redirect_url = url_for('home')
+            
             # Create response with JWT cookie
-            resp = redirect(url_for('admin_dashboard' if user.role == 'Admin' else 'home'))
+            resp = redirect(redirect_url)
             set_access_cookies(resp, access_token)
             return resp
         else:
@@ -436,6 +456,8 @@ def add_recipe():
         category = request.form['category']
         dietary_preference = request.form['dietary_preference']
         cooking_time = request.form.get('cooking_time')
+        servings = request.form.get('servings')
+        difficulty = request.form.get('difficulty')
         ingredients = '\n'.join([v for k, v in request.form.items() if k.startswith('ingredient') and v])
         steps = '\n'.join([v for k, v in request.form.items() if k.startswith('instruction') and v])
         image_url = ''
@@ -451,6 +473,8 @@ def add_recipe():
             category=category,
             dietary_preference=dietary_preference,
             cooking_time=int(cooking_time) if cooking_time else None,
+            servings=int(servings) if servings else None,
+            difficulty=difficulty,
             ingredients=ingredients,
             steps=steps,
             image_url=image_url,
@@ -464,9 +488,15 @@ def add_recipe():
     return render_template('add_edit_recipe.html')
 
 @app.route('/favourite/<int:recipe_id>', methods=['POST'])
-@jwt_required()
 def add_favourite(recipe_id):
-    user_id = get_jwt_identity()
+    # Check if user is logged in via session
+    if 'user_id' not in session:
+        if request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({"msg": "Authentication required"}), 401
+        flash('Please log in to save favorites', 'error')
+        return redirect(url_for('login'))
+    
+    user_id = session['user_id']
     if not Favourite.query.filter_by(user_id=user_id, recipe_id=recipe_id).first():
         fav = Favourite(user_id=user_id, recipe_id=recipe_id)
         db.session.add(fav)
@@ -474,9 +504,15 @@ def add_favourite(recipe_id):
     return '', 204
 
 @app.route('/unfavourite/<int:recipe_id>', methods=['POST'])
-@jwt_required()
 def remove_favourite(recipe_id):
-    user_id = get_jwt_identity()
+    # Check if user is logged in via session
+    if 'user_id' not in session:
+        if request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({"msg": "Authentication required"}), 401
+        flash('Please log in to manage favorites', 'error')
+        return redirect(url_for('login'))
+    
+    user_id = session['user_id']
     fav = Favourite.query.filter_by(user_id=user_id, recipe_id=recipe_id).first()
     if fav:
         db.session.delete(fav)
@@ -488,13 +524,21 @@ def browse_recipes():
     user_id = None
     user = None
     fav_ids = set()
-    try:
-        user_id = get_jwt_identity()
-        user = User.query.get(user_id) if user_id else None
+    
+    # Check session first, then JWT
+    if 'user_id' in session:
+        user_id = session['user_id']
+        user = User.query.get(user_id)
         if user_id:
             fav_ids = set(f.recipe_id for f in Favourite.query.filter_by(user_id=user_id).all())
-    except Exception:
-        pass
+    else:
+        try:
+            user_id = get_jwt_identity()
+            user = User.query.get(user_id) if user_id else None
+            if user_id:
+                fav_ids = set(f.recipe_id for f in Favourite.query.filter_by(user_id=user_id).all())
+        except Exception:
+            pass
     if user and user.role == 'Admin':
         query = Recipe.query
     else:
@@ -572,6 +616,34 @@ RecipeMaster Team
     except Exception as e:
         print(f"Failed to send notification email: {e}")
 
+def send_review_approval_notification(review):
+    """Send email notification to user when their review is approved"""
+    try:
+        user = User.query.get(review.user_id)
+        recipe = Recipe.query.get(review.recipe_id)
+        
+        if user and user.email and recipe:
+            subject = f"Your Review Has Been Approved - RecipeMaster"
+            body = f"""
+Hello {user.name},
+
+Great news! Your review for the recipe "{recipe.title}" has been approved and is now visible to other users.
+
+Your Review:
+Rating: {'⭐' * review.rating} ({review.rating}/5)
+Review: {review.text}
+
+You can view your published review at: {url_for('recipe_detail', recipe_id=recipe.id, _external=True)}
+
+Thank you for contributing to the RecipeMaster community!
+
+Best regards,
+RecipeMaster Team
+            """
+            send_email(subject, [user.email], body)
+    except Exception as e:
+        print(f"Failed to send review approval notification: {e}")
+
 # Add or edit review
 @app.route('/recipe/<int:recipe_id>/review', methods=['POST'])
 def add_or_edit_review(recipe_id):
@@ -620,8 +692,9 @@ def add_or_edit_review(recipe_id):
         # Send notification for new reviews only
         try:
             send_comment_notification(review)
-        except:
-            pass  # Don't fail if email notification fails
+        except Exception as e:
+            print(f"Failed to send review notification email: {e}")
+            # Don't fail if email notification fails
     
     if request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({"msg": message}), 200
@@ -631,19 +704,35 @@ def add_or_edit_review(recipe_id):
 
 @app.route('/recipe/<int:recipe_id>')
 def recipe_detail(recipe_id):
-    recipe = Recipe.query.get_or_404(recipe_id)
-    recipe.popularity += 1
-    db.session.commit()
-    
+    # Check if user is logged in (either via session or JWT)
     user_id = None
     user = None
     is_admin = False
-    try:
-        user_id = get_jwt_identity()
-        user = User.query.get(user_id) if user_id else None
+    
+    # First check session
+    if 'user_id' in session:
+        user_id = session['user_id']
+        user = User.query.get(user_id)
         is_admin = user and user.role == 'Admin'
-    except Exception:
-        pass
+    else:
+        # Try JWT if session not available
+        try:
+            user_id = get_jwt_identity()
+            user = User.query.get(user_id) if user_id else None
+            is_admin = user and user.role == 'Admin'
+        except Exception:
+            pass
+    
+    # If no user is logged in, redirect to login
+    if not user_id:
+        flash('Please log in to view recipe details', 'info')
+        # Store the intended destination in session
+        session['next_url'] = request.url
+        return redirect(url_for('login'))
+    
+    recipe = Recipe.query.get_or_404(recipe_id)
+    recipe.popularity += 1
+    db.session.commit()
     
     is_owner = user_id == recipe.user_id if user_id else False
     
@@ -655,8 +744,10 @@ def recipe_detail(recipe_id):
     avg_rating = round(sum(r.rating for r in reviews) / len(reviews), 1) if reviews else None
     
     user_review = None
+    is_favorited = False
     if user_id:
         user_review = Review.query.filter_by(user_id=user_id, recipe_id=recipe_id).first()
+        is_favorited = Favourite.query.filter_by(user_id=user_id, recipe_id=recipe_id).first() is not None
     
     return render_template('recipe_detail.html', 
                          recipe=recipe, 
@@ -664,7 +755,8 @@ def recipe_detail(recipe_id):
                          reviews=reviews, 
                          avg_rating=avg_rating, 
                          user_review=user_review, 
-                         is_admin=is_admin)
+                         is_admin=is_admin,
+                         is_favorited=is_favorited)
 
 @app.route('/edit-recipe/<int:recipe_id>', methods=['GET', 'POST'])
 def edit_recipe(recipe_id):
@@ -680,7 +772,9 @@ def edit_recipe(recipe_id):
         recipe.description = request.form['description']
         recipe.category = request.form['category']
         recipe.dietary_preference = request.form['dietary_preference']
-        recipe.cooking_time = request.form.get('cooking_time')
+        recipe.cooking_time = int(request.form.get('cooking_time')) if request.form.get('cooking_time') else None
+        recipe.servings = int(request.form.get('servings')) if request.form.get('servings') else None
+        recipe.difficulty = request.form.get('difficulty')
         recipe.ingredients = '\n'.join([v for k, v in request.form.items() if k.startswith('ingredient') and v])
         recipe.steps = '\n'.join([v for k, v in request.form.items() if k.startswith('instruction') and v])
         if 'image' in request.files:
@@ -778,6 +872,14 @@ def approve_review(review_id):
     if review:
         review.approved = True
         db.session.commit()
+        
+        # Send approval notification to the user
+        try:
+            send_review_approval_notification(review)
+        except Exception as e:
+            print(f"Failed to send review approval notification email: {e}")
+            # Don't fail if email notification fails
+            
         return '', 204
     return '', 404
 
@@ -809,14 +911,28 @@ def reset_password_request():
         if user:
             token = serializer.dumps(user.email, salt='reset-password')
             link = url_for('reset_password_token', token=token, _external=True)
-            send_email(
-                subject='Password Reset Request',
-                recipients=[user.email],
-                body=f'Click the link to reset your password: {link}\nThis link is valid for 1 hour.'
-            )
-            flash('Password reset link sent to your email.')
+            
+            subject = 'Password Reset Request - RecipeMaster'
+            body = f"""
+Hello {user.name},
+
+You have requested to reset your password for your RecipeMaster account.
+
+Click the link below to reset your password:
+{link}
+
+This link is valid for 1 hour only.
+
+If you did not request this password reset, please ignore this email.
+
+Best regards,
+RecipeMaster Team
+            """
+            
+            send_email(subject, [user.email], body)
+            flash('Password reset link sent to your email. Please check your inbox.')
         else:
-            flash('If the email exists, a reset link has been sent.')
+            flash('If the email exists in our system, a reset link has been sent.')
     return render_template('reset_password_request.html')
 
 @app.route('/reset-password/<token>', methods=['GET', 'POST'])
@@ -861,18 +977,22 @@ def inject_user():
     if 'user_id' in session:
         user = User.query.get(session['user_id'])
         if user:
+            # Add is_authenticated property to user object
+            user.is_authenticated = True
             context.update({
                 'logged_in': True,
                 'user_name': user.name,
                 'current_user': user
             })
-    # Check JWT-based authentication
-    elif 'Authorization' in request.headers:
+    # Check JWT-based authentication (try both header and cookies)
+    else:
         try:
             user_id = get_jwt_identity()
             if user_id:
                 user = User.query.get(user_id)
                 if user:
+                    # Add is_authenticated property to user object
+                    user.is_authenticated = True
                     context.update({
                         'logged_in': True,
                         'user_name': user.name,
@@ -882,6 +1002,50 @@ def inject_user():
             pass
             
     return context
+
+# Footer pages routes
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/terms')
+def terms():
+    return render_template('terms.html')
+
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        subject = request.form.get('subject')
+        message = request.form.get('message')
+        
+        # Send contact email to admin
+        try:
+            admin_email = app.config['MAIL_USERNAME']
+            email_subject = f"Contact Form: {subject}"
+            email_body = f"""
+New contact form submission:
+
+Name: {name}
+Email: {email}
+Subject: {subject}
+
+Message:
+{message}
+
+---
+Sent from RecipeMaster Contact Form
+            """
+            send_email(email_subject, [admin_email], email_body)
+            flash('Thank you for your message! We will get back to you soon.', 'success')
+        except Exception as e:
+            print(f"Failed to send contact email: {e}")
+            flash('Message sent successfully!', 'success')  # Still show success to user
+        
+        return redirect(url_for('contact'))
+    
+    return render_template('contact.html')
 
 
 

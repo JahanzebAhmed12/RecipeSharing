@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ recipe.title }} - RecipeMaster{% endblock %}
+{% block title %}{{ recipe.title }} - TastyShare{% endblock %}
 
 {% block content %}
 <main class="recipe-detail-container">
@@ -19,8 +19,12 @@
             <p class="recipe-description">{{ recipe.description }}</p>
             
             {% if current_user.is_authenticated %}
-            <button id="favoriteBtn" class="favorite-btn">
-                <i class="fa fa-heart"></i> Save to Favorites
+            <button id="favoriteBtn" class="favorite-btn {% if is_favorited %}favorited{% endif %}">
+                {% if is_favorited %}
+                <i class="fa fa-heart"></i> Saved to Favorites
+                {% else %}
+                <i class="fa fa-heart-o"></i> Save to Favorites
+                {% endif %}
             </button>
             {% endif %}
             
@@ -225,6 +229,47 @@ document.addEventListener('DOMContentLoaded', function() {
                     label.style.color = '#ddd';
                 });
             }
+        });
+    }
+    
+    // Favorite button functionality
+    const favoriteBtn = document.getElementById('favoriteBtn');
+    if (favoriteBtn) {
+        favoriteBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const recipeId = {{ recipe.id }};
+            const isFavorited = this.classList.contains('favorited');
+            const url = isFavorited ? `/unfavourite/${recipeId}` : `/favourite/${recipeId}`;
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Toggle button state
+                    if (isFavorited) {
+                        this.classList.remove('favorited');
+                        this.innerHTML = '<i class="fa fa-heart-o"></i> Save to Favorites';
+                    } else {
+                        this.classList.add('favorited');
+                        this.innerHTML = '<i class="fa fa-heart"></i> Saved to Favorites';
+                    }
+                } else if (response.status === 401) {
+                    alert('Please log in to save favorites');
+                    window.location.href = '/login';
+                } else {
+                    console.error('Failed to toggle favorite');
+                    alert('Failed to update favorites. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
         });
     }
 });
